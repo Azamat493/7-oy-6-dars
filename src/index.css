@@ -1,0 +1,6 @@
+@import "tailwindcss";
+
+@theme {
+  --font-family: "Jost", sans-serif;
+  --second-family: "Hanging Letters", sans-serif;
+}

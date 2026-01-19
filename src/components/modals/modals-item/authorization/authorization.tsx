@@ -17,6 +17,7 @@ const AuthorizationModal = () => {
   return (
     <Modal
       open={authorizationModalVisibility}
+      centered
       footer={false}
       onCancel={() => dispatch(setAuthorizationModalVisibility())}
       mask={true}

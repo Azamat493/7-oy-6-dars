@@ -42,7 +42,6 @@ const PlantPromoCard: React.FC<PlantPromoCardProps> = ({
   title,
   description,
   image,
-  link,
 }) => {
   return (
     <div className="relative  flex flex-col sm:flex-row items-center justify-between border border-gray-100 rounded bg-[#fbfbfb] p-6 shadow-sm overflow-hidden h-full">

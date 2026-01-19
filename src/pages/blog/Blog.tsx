@@ -1,9 +1,11 @@
-
+import Header from "../../components/header/Header";
 
 const Blog = () => {
   return (
-    <div>Blog</div>
-  )
-}
+    <div>
+      <Header />
+    </div>
+  );
+};
 
-export default Blog
+export default Blog;

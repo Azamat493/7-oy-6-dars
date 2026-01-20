@@ -14,10 +14,6 @@ const Header = () => {
   const dispatch = useReduxDispatch();
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const navigate = useNavigate();
-  const handleLogin = () => {
-    setIsDrawerOpen(false);
-    dispatch(setAuthorizationModalVisibility());
-  };
   const { user, isAuth } = useReduxSelector((state) => state.userSlice);
 
   return (

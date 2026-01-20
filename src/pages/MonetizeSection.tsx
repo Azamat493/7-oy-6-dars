@@ -4,27 +4,26 @@ import { useReduxDispatch } from "../hooks/useRedux/useRedux";
 import { setAuthorizationModalVisibility } from "../redux/modal-store";
 
 const MonetizeSection: React.FC = () => {
-  const dispatch = useReduxDispatch(); // Dispatch ni chaqiramiz
+  const dispatch = useReduxDispatch();
   const openAuthModal = () => {
     dispatch(setAuthorizationModalVisibility());
   };
   return (
-    <section className="py-7 bg-white font-sans">
-      <div className="w-[90%] mx-auto ">
+    <section className="py-5 sm:py-7 bg-white font-sans overflow-hidden">
+      <div className="w-[95%] sm:w-[90%] mx-auto">
         <img
           src={blogheaderhi2KeX2m}
-          alt=""
-          className="rounded-[12px] mx-auto"
+          alt="GreenShop Banner"
+          className="w-full h-auto object-cover rounded-[12px] mx-auto"
         />
 
-        {/* 2-QISM: Matnlar va Button */}
         <div className="text-center max-w-3xl mx-auto">
-          <h2 className="text-3xl md:text-5xl font-bold text-gray-900 mb-6 leading-tight">
-            Monetize your content <br />
+          <h2 className="text-2xl sm:text-3xl md:text-5xl mt-4 sm:mt-5 font-bold text-gray-900 mb-4 sm:mb-6 leading-tight">
+            Monetize your content <br className="hidden sm:block" />
             with <span className="text-[#46A358]">GreenShop</span>
           </h2>
 
-          <p className="text-gray-500 text-sm md:text-base leading-relaxed mb-8 px-4">
+          <p className="text-gray-500 text-sm md:text-base leading-relaxed mb-6 sm:mb-8 px-0 sm:px-4">
             GreenShop - a platform for buying and selling, publishing and
             monetizing all types of flowers: articles, notes, video, photos,
             podcasts or songs.
@@ -32,7 +31,7 @@ const MonetizeSection: React.FC = () => {
 
           <button
             onClick={openAuthModal}
-            className="bg-[#46a358] cursor-pointer hover:bg-[#3d8f4d] text-white font-bold py-3 px-8 rounded-lg transition duration-300 shadow-lg shadow-green-500/30"
+            className="bg-[#46a358] cursor-pointer hover:bg-[#3d8f4d] text-white font-bold py-2.5 px-6 sm:py-3 sm:px-8 text-sm sm:text-base rounded-lg transition duration-300 shadow-lg shadow-green-500/30 w-full sm:w-auto"
           >
             Join GreenShop
           </button>

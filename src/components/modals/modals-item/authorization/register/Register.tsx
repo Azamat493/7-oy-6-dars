@@ -45,7 +45,9 @@ const Register = () => {
           <Form.Item
             name="name"
             className="mb-4"
-            rules={[{ required: true, message: "Please input your name!" }]}
+            rules={[
+              { required: true, message: "Iltimos, ismingizni kiriting!" },
+            ]}
           >
             <Input placeholder="name" className={input_style} />
           </Form.Item>
@@ -53,7 +55,9 @@ const Register = () => {
           <Form.Item
             name="surname"
             className="mb-4"
-            rules={[{ required: true, message: "Please input your surname!" }]}
+            rules={[
+              { required: true, message: "Iltimos, familiyangizni kiriting!" },
+            ]}
           >
             <Input placeholder="surname" className={input_style} />
           </Form.Item>
@@ -62,8 +66,11 @@ const Register = () => {
             name="email"
             className="mb-4"
             rules={[
-              { required: true, message: "Iltimos, elektron pochtangizni kiriting!" },
-              { type: "email", message: "Invalid email format!" },
+              {
+                required: true,
+                message: "Iltimos, elektron pochtangizni kiriting!",
+              },
+              { type: "email", message: "Elektron pochta formati noto'g'ri!" },
             ]}
           >
             <Input
@@ -117,11 +124,7 @@ const Register = () => {
               active:scale-[0.98]
               transition-all duration-200 disabled:opacity-70 disabled:cursor-not-allowed"
           >
-            {isPending ? (
-              <Loader className="animate-spin" />
-            ) : (
-              "Register"
-            )}
+            {isPending ? <Loader className="animate-spin" /> : "Register"}
           </button>
         </Form>
 

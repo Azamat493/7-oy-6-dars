@@ -20,7 +20,10 @@ export const useAxios = () => {
         ...param,
       },
     })
-      .then((res) => res.data.data)
+      .then((res) => {
+    console.log("Asl Javob:", res); // Konsolga to'liq javobni chiqaradi
+    return res.data; // .data.data emas, shunchaki .data qilib ko'ring
+})
       .catch((error) => {
         throw error;
       });

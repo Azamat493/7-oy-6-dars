@@ -1,3 +1,4 @@
+import Footer from "../../components/footer/Footer";
 import Header from "../../components/header/Header";
 import PlantPromoSection from "../PlantPromoCard";
 import ShopPage from "../ShopPage";
@@ -10,6 +11,7 @@ const Home = () => {
       <Showcase />
       <ShopPage />
       <PlantPromoSection />
+      <Footer />
     </div>
   );
 };

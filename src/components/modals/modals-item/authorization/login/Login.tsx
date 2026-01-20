@@ -3,6 +3,7 @@ import GoogleIcon from "../../../../../assets/icon/google";
 import FacebookIcon from "../../../../../assets/icon/facebook";
 import { useLoginMutation } from "../../../../../hooks/useQuery/useQueryAction/useQueryAction";
 import { Loader } from "lucide-react";
+import { signInWithGoogle } from "../../../../../config/config";
 
 const Login = () => {
   const input_style: string = "h-[40px] mt-2 border-[#46A358]";
@@ -16,7 +17,10 @@ const Login = () => {
   const login = (values: { email: string; password: string }) => {
     mutate(values);
   };
-
+  const googleLogin = async () => {
+    const response = await signInWithGoogle();
+    console.log(response);
+  };
   return (
     <div className="w-4/5 m-auto">
       <div className="mt-5 mb-2">
@@ -28,11 +32,11 @@ const Login = () => {
             rules={[
               {
                 required: true,
-                message: "Please input your email",
+                message: "Iltimos, elektron pochtangizni kiriting!",
               },
               {
                 type: "email",
-                message: "The input is not valid E-mail!",
+                message: "Kiritish haqiqiy E-mail emas!",
               },
             ]}
           >
@@ -47,7 +51,7 @@ const Login = () => {
             rules={[
               {
                 required: true,
-                message: "Please input your password",
+                message: "Iltimos, parolingizni kiriting!",
               },
             ]}
           >
@@ -83,7 +87,7 @@ const Login = () => {
           <div className="w-[30%] h-0.5 bg-[#EAEAEA]"></div>
         </div>
 
-        <div className={`${icon_style}`}>
+        <div onClick={googleLogin} className={`${icon_style}`}>
           <GoogleIcon />
           <p>Login with Google</p>
         </div>

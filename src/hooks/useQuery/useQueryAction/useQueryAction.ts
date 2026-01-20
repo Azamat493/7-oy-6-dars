@@ -1,29 +1,63 @@
 import { useMutation } from "@tanstack/react-query";
 import { useAxios } from "../../useAxios/UseAxios";
+import { notificationApi } from "../../../generic/notificationApi/NotificationApi";
+import Cookies from "js-cookie";
+import { useReduxDispatch } from "../../useRedux/useRedux";
+import { setAuthorizationModalVisibility } from "../../../redux/modal-store";
+import { getUser } from "../../../redux/user-slice";
 
 export const useLoginMutation = () => {
+  const notify = notificationApi();
   const axios = useAxios();
+  const dispatch = useReduxDispatch();
   return useMutation({
     mutationKey: ["login"],
     mutationFn: (data: object) =>
       axios({ url: "user/sign-in", method: "POST", body: data }),
     onSuccess(data) {
-      console.log(data);
+      notify("login");
+      const { token, user } = data;
+      Cookies.set("token", token);
+      Cookies.set("user", JSON.stringify(user));
+      dispatch(getUser(user));
+      dispatch(setAuthorizationModalVisibility());
+    },
+    onError(error: { status: number }) {
+      // console.log(error);
+      if (error.status === 409) {
+        notify("409");
+      }
     },
   });
 };
 
 export const useRegisterMutation = () => {
+  const notify = notificationApi();
   const axios = useAxios();
+  const dispatch = useReduxDispatch();
   return useMutation({
     mutationKey: ["register"],
     mutationFn: (data: object) =>
-      axios({ url: "user/sign-up", method: "POST", body: data }), 
+      axios({ url: "user/sign-up", method: "POST", body: data }),
     onSuccess(data) {
-      console.log("Registratsiya muvaffaqiyatli:", data);
+      notify("register");
+      const { token, user } = data;
+      Cookies.set("token", token);
+      Cookies.set("user", JSON.stringify(user));
+      dispatch(getUser(user));
+      dispatch(setAuthorizationModalVisibility());
     },
-    onError(error) {
-      console.log("Xatolik yuz berdi:", error);
-    }
+    onError(error: { status: number }) {
+      // console.log(error);
+      if (error.status === 409) {
+        notify("409");
+      }
+    },
   });
 };
+
+export const useOnAuthGoogle = () => {
+  return useMutation({
+    
+  })
+}

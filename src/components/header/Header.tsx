@@ -1,8 +1,11 @@
 import { useState } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import Logo from "../../assets/images/Logo.png";
 import { Bell, Menu, X } from "lucide-react";
-import { useReduxDispatch } from "../../hooks/useRedux/useRedux";
+import {
+  useReduxDispatch,
+  useReduxSelector,
+} from "../../hooks/useRedux/useRedux";
 import { setAuthorizationModalVisibility } from "../../redux/modal-store";
 import { Drawer } from "antd";
 
@@ -10,11 +13,12 @@ const Header = () => {
   const { pathname } = useLocation();
   const dispatch = useReduxDispatch();
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-
+  const navigate = useNavigate();
   const handleLogin = () => {
     setIsDrawerOpen(false);
     dispatch(setAuthorizationModalVisibility());
   };
+  const { user, isAuth } = useReduxSelector((state) => state.userSlice);
 
   return (
     <div className="py-3 border-b border-[#00800043] sticky top-0 bg-white z-50">
@@ -69,10 +73,15 @@ const Header = () => {
             />
           </svg>
           <button
-            onClick={() => dispatch(setAuthorizationModalVisibility())}
+            onClick={() => {
+              if (isAuth) {
+                return navigate("/profile");
+              }
+              dispatch(setAuthorizationModalVisibility());
+            }}
             className="bg-[#46a358] hover:bg-[#3d8f4d] hover:-translate-y-[1px] hover:shadow-md transition-all duration-200 rounded-md cursor-pointer font-medium text-base text-white p-[7px_25px]"
           >
-            Login
+            {user ? user.name : "Login"}
           </button>
         </div>
 
@@ -147,7 +156,12 @@ const Header = () => {
           </div>
 
           <button
-            onClick={handleLogin}
+            onClick={() => {
+              if (isAuth) {
+                return navigate("/profile");
+              }
+              dispatch(setAuthorizationModalVisibility());
+            }}
             className="bg-[#46a358] hover:bg-[#3d8f4d] active:scale-95 transition-all mt-4 rounded-md cursor-pointer font-medium text-base text-white py-2 w-full flex items-center justify-center gap-2"
           >
             <svg
@@ -164,7 +178,7 @@ const Header = () => {
               <polyline points="10 17 15 12 10 7" />
               <line x1="15" y1="12" x2="3" y2="12" />
             </svg>
-            Login
+            {user ? user.name : "Login"}
           </button>
         </div>
       </Drawer>

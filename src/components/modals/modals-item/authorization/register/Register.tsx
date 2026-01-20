@@ -3,6 +3,8 @@ import { EyeInvisibleOutlined, EyeTwoTone } from "@ant-design/icons";
 import GoogleIcon from "../../../../../assets/icon/google";
 import { useRegisterMutation } from "../../../../../hooks/useQuery/useQueryAction/useQueryAction";
 import { Loader } from "lucide-react";
+import type { RegisterType } from "../../../../../@types/AuthType";
+import { notificationApi } from "../../../../../generic/notificationApi/NotificationApi";
 
 const Register = () => {
   const input_style = "h-[40px] mt-2 border-[#46A358]";
@@ -13,10 +15,14 @@ const Register = () => {
 
   const { mutate, isPending } = useRegisterMutation();
 
-  const onRegister = (values: any) => {
-    mutate(values);
+  const notify = notificationApi();
+  const user_register = (e: RegisterType) => {
+    if (e.password !== e.confirm_password) {
+      return notify("confirm_password");
+    }
+    const { name, password, surname, email } = e;
+    mutate({ name, password, surname, email });
   };
-
   return (
     <div className="w-full px-5 pb-6">
       <div className="mt-4">
@@ -25,7 +31,7 @@ const Register = () => {
         </p>
 
         <Form
-          onFinish={onRegister}
+          onFinish={user_register}
           autoComplete="off"
           layout="vertical"
           requiredMark={false}
@@ -56,12 +62,12 @@ const Register = () => {
             name="email"
             className="mb-4"
             rules={[
-              { required: true, message: "Please input your email!" },
+              { required: true, message: "Iltimos, elektron pochtangizni kiriting!" },
               { type: "email", message: "Invalid email format!" },
             ]}
           >
             <Input
-              placeholder="example@gmail.com"
+              placeholder="enter your email adress"
               autoComplete="off"
               className={input_style}
             />
@@ -71,8 +77,11 @@ const Register = () => {
             name="password"
             className="mb-6"
             rules={[
-              { required: true, message: "Please input your password!" },
-              { min: 6, message: "Password must be at least 6 characters" },
+              { required: true, message: "Iltimos, parolingizni kiriting!" },
+              {
+                min: 6,
+                message: "Parol kamida 6 ta belgidan iborat bo'lishi kerak",
+              },
             ]}
           >
             <Input.Password
@@ -82,6 +91,20 @@ const Register = () => {
                 visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />
               }
               autoComplete="new-password"
+            />
+          </Form.Item>
+          <Form.Item
+            name="confirm_password"
+            rules={[
+              { required: true, message: "Iltimos, parolingizni tasdiqlang!" },
+            ]}
+          >
+            <Input.Password
+              placeholder="confirm password"
+              className={input_style}
+              iconRender={(v) =>
+                v ? <EyeTwoTone /> : <EyeInvisibleOutlined />
+              }
             />
           </Form.Item>
 
@@ -95,7 +118,7 @@ const Register = () => {
               transition-all duration-200 disabled:opacity-70 disabled:cursor-not-allowed"
           >
             {isPending ? (
-              <Loader className="animate-spin text-white" />
+              <Loader className="animate-spin" />
             ) : (
               "Register"
             )}

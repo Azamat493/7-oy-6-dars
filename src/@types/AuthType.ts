@@ -40,3 +40,47 @@ export interface RegisterType {
   password: string;
   confirm_password: string;
 }
+
+export interface CategoryType {
+  count: number;
+  created_at: string;
+  created_by: string;
+  route_path: string;
+  title: string;
+  _id: string;
+}
+
+export interface QueryType<T> {
+  isLoading: boolean;
+  isError: boolean;
+  data?: T;
+}
+
+export interface DiscountFlowerType {
+  discoount_up_to: number;
+  id: number;
+  poster_image_url: string;
+  title: string;
+}
+
+export interface ProductType {
+  _id: string;
+  title: string;
+  price: number;
+  main_image: string;
+  discount: boolean;
+  discount_price?: number;
+  short_description: string;
+  description: string;
+  detailed_images: string[];
+  rate: number;
+  views: number;
+  tags: [];
+  comments: [];
+  sold_items: number;
+  created_by: string;
+  created_at: string;
+  category: string;
+  count?: number | undefined;
+  userPrice?: number;
+}

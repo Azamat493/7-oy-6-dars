@@ -49,7 +49,7 @@ const Showcase = () => {
   ];
 
   return (
-    <div className="w-[95%] md:w-[90%] m-auto mt-4 rounded-2xl md:rounded-3xl overflow-hidden relative bg-[#F5F5F5]">
+    <div className="w-[95%] max-w-[1550px] md:w-[90%] m-auto mt-4 rounded-2xl md:rounded-3xl overflow-hidden relative bg-[#F5F5F5]">
       <Carousel
         dots={false}
         autoplay

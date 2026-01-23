@@ -6,7 +6,7 @@ import BispicH from "../../assets/images/3-Bi-spicH.png";
 const Footer: React.FC = () => {
   return (
     <footer className="bg-white border-t mt-20 border-gray-100 pt-10 font-sans">
-      <div className="w-[90%] mx-auto px-4 lg:px-12">
+      <div className="w-[90%] max-w-[1550px] mx-auto px-4 lg:px-12">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-8 border-b border-gray-100 ">
           <div className="flex flex-col items-start pr-4 border-r-0 lg:border-r border-gray-100 last:border-r-0">
             <div className="mb-4 relative">
@@ -61,7 +61,7 @@ const Footer: React.FC = () => {
               <input
                 type="email"
                 placeholder="enter your email address..."
-                className="flex-1 p-3 text-sm border border-gray-200 focus:outline-none focus:border-green-500 rounded-l-md"
+                className="flex-1 min-w-[120px] p-3 text-sm border border-gray-200 focus:outline-none focus:border-green-500 rounded-l-md"
               />
               <button className="bg-[#46a358] cursor-pointer text-white px-6 py-3 font-bold text-sm rounded-r-md hover:bg-[#357a40] transition-colors">
                 Join

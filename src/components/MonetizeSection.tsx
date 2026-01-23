@@ -10,7 +10,7 @@ const MonetizeSection: React.FC = () => {
   };
   return (
     <section className="py-5 sm:py-7 bg-white font-sans overflow-hidden">
-      <div className="w-[95%] sm:w-[90%] mx-auto">
+      <div className="w-[95%] max-w-[1550px] sm:w-[90%] mx-auto">
         <img
           src={blogheaderhi2KeX2m}
           alt="GreenShop Banner"

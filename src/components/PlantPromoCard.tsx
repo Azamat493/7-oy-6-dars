@@ -96,7 +96,7 @@ const PlantPromoCard: React.FC<PlantPromoCardProps> = ({
 
 const PlantPromoSection: React.FC = () => {
   return (
-    <section className="w-[90%] mx-auto px-4 py-6">
+    <section className="w-[90%] max-w-[1550px] mx-auto px-4 py-6">
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         {promoData.map((item) => (
           <PlantPromoCard

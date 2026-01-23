@@ -18,7 +18,7 @@ const Header = () => {
 
   return (
     <div className="py-3 border-b border-[#00800043] sticky top-0 bg-white z-50">
-      <div className="w-[90%] m-auto flex items-center justify-between">
+      <div className="w-[90%] max-w-[1550px] m-auto flex items-center justify-between">
         <a href="/">
           <img
             src={Logo}

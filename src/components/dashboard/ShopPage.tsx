@@ -38,7 +38,6 @@ const ShopPage = () => {
 
   return (
     <div className="w-[90%] max-w-[1550px] m-auto mt-10 mb-20 flex flex-col lg:flex-row gap-8">
-
       <div className="w-full lg:w-[25%] bg-[#fbfbfb] p-4 rounded-md h-fit">
         <h3 className="font-bold text-[18px] text-[#3D3D3D] mb-4">
           Categories
@@ -85,20 +84,23 @@ const ShopPage = () => {
         </div>
       </div>
 
-
       <div className="w-full lg:w-[75%] grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
-        {productsLoading
-          ? skeletons.map((_, idx) => (
-              <div
-                key={idx}
-                className="p-4 border rounded-md shadow-sm flex items-center justify-center h-[300px]"
-              >
-                <Skeleton.Image active style={{ width: 180, height: 180 }} />
-              </div>
-            ))
-          : productsData?.map((product) => (
-              <Card key={product._id} product={product} />
-            ))}
+        {productsError ? (
+          <p className="text-red-500 font-medium">Products not found 😕</p>
+        ) : productsLoading ? (
+          skeletons.map((_, idx) => (
+            <div
+              key={idx}
+              className="p-4 border rounded-md shadow-sm flex items-center justify-center h-[300px]"
+            >
+              <Skeleton.Image active style={{ width: 180, height: 180 }} />
+            </div>
+          ))
+        ) : (
+          productsData?.map((product) => (
+            <Card key={product._id} product={product} />
+          ))
+        )}
       </div>
     </div>
   );

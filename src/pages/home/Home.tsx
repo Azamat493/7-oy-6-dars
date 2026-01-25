@@ -1,17 +1,15 @@
-import Footer from "../../components/footer/Footer";
-import Header from "../../components/header/Header";
 import PlantPromoSection from "../../components/PlantPromoCard";
 import ShopPage from "../../components/dashboard/ShopPage";
 import Showcase from "../../components/Showcase";
+import BlogSection from "../../components/BlogSection";
 
 const Home = () => {
   return (
     <div>
-      <Header />
       <Showcase />
       <ShopPage />
       <PlantPromoSection />
-      <Footer />
+      <BlogSection />
     </div>
   );
 };

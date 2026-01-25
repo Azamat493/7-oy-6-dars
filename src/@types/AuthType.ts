@@ -84,3 +84,14 @@ export interface ProductType {
   count?: number | undefined;
   userPrice?: number;
 }
+
+export interface ProductsTitleType {
+  id: number;
+  title: string;
+  route_path: string;
+}
+
+export interface ShopCartType extends ProductType{
+  counter: number;
+  userPrice: number;
+}

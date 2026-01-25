@@ -2,6 +2,11 @@ import { Heart, Search, ShoppingCart } from "lucide-react";
 import type { ProductType } from "../../@types/AuthType";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
+import {
+  useReduxDispatch,
+  useReduxSelector,
+} from "../../hooks/useRedux/useRedux";
+import { getData } from "../../redux/shop-slice";
 
 const Card = ({ product }: { product: ProductType }) => {
   const navigate = useNavigate();
@@ -10,12 +15,12 @@ const Card = ({ product }: { product: ProductType }) => {
   const handleViewDetails = () => {
     navigate(`/shop/${product.category}/${product._id}`);
   };
-
+  const { data } = useReduxSelector((state) => state.shopSlice);
+  const dispatch = useReduxDispatch();
   return (
     <div className="group">
       <div
         onClick={() => {
-  
           if (window.innerWidth < 1024) {
             setIsMobileOpen((prev) => !prev);
           }
@@ -33,17 +38,12 @@ const Card = ({ product }: { product: ProductType }) => {
           className="w-[80%] h-[80%] object-contain mix-blend-multiply"
         />
 
-       
         <div
           className={`
             absolute left-1/2 -translate-x-1/2 flex gap-4 z-20
             transition-all duration-300
 
-            ${
-              isMobileOpen
-                ? "opacity-100 bottom-6"
-                : "opacity-0 -bottom-10"
-            }
+            ${isMobileOpen ? "opacity-100 bottom-6" : "opacity-0 -bottom-10"}
 
             lg:opacity-0
             lg:-bottom-10
@@ -52,7 +52,10 @@ const Card = ({ product }: { product: ProductType }) => {
           `}
         >
           <div
-            onClick={(e) => e.stopPropagation()}
+            onClick={(e) => {
+              e.stopPropagation();
+              dispatch(getData(product));
+            }}
             className="w-[35px] h-[35px] bg-white rounded-md flex items-center justify-center
                        text-[#3D3D3D] hover:text-[#46A358]
                        cursor-pointer shadow-md hover:-translate-y-[2px] transition-all"

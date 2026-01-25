@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Slider, Skeleton } from "antd";
 import { useQueryHandler } from "../../hooks/useQuery/UseQuery";
 import type {
@@ -8,11 +8,26 @@ import type {
 } from "../../@types/AuthType";
 import { loaderApi } from "../../generic/loader/loaderApi";
 import Card from "./Card";
+import { useSearchParamsHandler } from "../../hooks/paramsApi/paramsApi";
+import ProductsTitle from "./products_title/ProductsTitleSection";
 
 const ShopPage = () => {
-  const [activeCategory, setActiveCategory] = useState<string>("house-plants");
-  const [slider, setSlider] = useState<number[]>([0, 1000]);
   const { cateGoryLoader } = loaderApi();
+  const { getParam, setParam } = useSearchParamsHandler();
+
+  const range_max = Number(getParam("range_max")) || 1000;
+  const range_min = Number(getParam("range_min")) || 0;
+  const type = getParam("type") || "all-plants";
+  const sort = getParam("sort") || "default-sorting";
+  const category = getParam("category") || "house-plants";
+
+  const [slider, setSlider] = useState<number[]>([range_min, range_max]);
+
+  useEffect(() => {
+    if (slider[0] !== range_min || slider[1] !== range_max) {
+      setSlider([range_min, range_max]);
+    }
+  }, [range_min, range_max]);
 
   const changeSlider = (value: number[]) => setSlider(value);
 
@@ -30,8 +45,15 @@ const ShopPage = () => {
     isLoading: productsLoading,
     isError: productsError,
   }: QueryType<ProductType[]> = useQueryHandler({
-    url: `flower/category/${activeCategory}`,
-    pathname: `products/${activeCategory}`,
+    url: `flower/category/${category}`,
+
+    pathname: `products-${category}-${range_min}-${range_max}-${type}-${sort}`,
+    param: {
+      range_min,
+      range_max,
+      type,
+      sort,
+    },
   });
 
   const skeletons = Array.from({ length: 6 });
@@ -48,9 +70,17 @@ const ShopPage = () => {
             : categoryData?.map((cat) => (
                 <div
                   key={cat._id}
-                  onClick={() => setActiveCategory(cat.route_path)}
+                  onClick={() =>
+                    setParam({
+                      category: cat.route_path,
+                      range_min,
+                      range_max,
+                      type,
+                      sort,
+                    })
+                  }
                   className={`flex items-center justify-between cursor-pointer transition-colors
-                    ${activeCategory === cat.route_path ? "text-[#46a358] font-bold" : "text-[#3d3d3d] hover:text-[#46a358]"}
+                    ${category === cat.route_path ? "text-[#46a358] font-bold" : "text-[#3d3d3d] hover:text-[#46a358]"}
                   `}
                 >
                   <h3>{cat.title}</h3>
@@ -82,25 +112,46 @@ const ShopPage = () => {
             </span>
           </p>
         </div>
+        <button
+          onClick={() =>
+            setParam({
+              category,
+              range_min: slider[0],
+              range_max: slider[1],
+              type,
+              sort,
+            })
+          }
+          className="bg-[#46a358] w-full mt-2 rounded-lg font-medium text-white p-[7px_25px] cursor-pointer"
+        >
+          Filter
+        </button>
       </div>
 
-      <div className="w-full lg:w-[75%] grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
-        {productsError ? (
-          <p className="text-red-500 font-medium">Products not found 😕</p>
-        ) : productsLoading ? (
-          skeletons.map((_, idx) => (
-            <div
-              key={idx}
-              className="p-4 border rounded-md shadow-sm flex items-center justify-center h-[300px]"
-            >
-              <Skeleton.Image active style={{ width: 180, height: 180 }} />
-            </div>
-          ))
-        ) : (
-          productsData?.map((product) => (
-            <Card key={product._id} product={product} />
-          ))
-        )}
+      <div className="w-full lg:w-[75%]">
+        <div className="mb-8">
+          <ProductsTitle />
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
+          {productsError ? (
+            <p className="text-red-500 font-medium">Products not found 😕</p>
+          ) : productsLoading ? (
+            skeletons.map((_, idx) => (
+              <div
+                key={idx}
+                className="p-4 border rounded-md shadow-sm flex flex-col gap-2 items-center justify-center h-[300px]"
+              >
+                <Skeleton.Image active style={{ width: 180, height: 180 }} />
+                <Skeleton.Input active />
+              </div>
+            ))
+          ) : (
+            productsData?.map((product) => (
+              <Card key={product._id} product={product} />
+            ))
+          )}
+        </div>
       </div>
     </div>
   );

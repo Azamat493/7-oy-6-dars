@@ -1,66 +1,61 @@
 import { createSlice } from "@reduxjs/toolkit";
+import type { PayloadAction } from "@reduxjs/toolkit";
 import type { ProductType, ShopCartType } from "../@types/AuthType";
 
 interface InitialStateType {
   data: ShopCartType[];
 }
+
 const initialState: InitialStateType = {
   data: JSON.parse(localStorage.getItem("shop") as string) || [],
 };
+
 const shopSlice = createSlice({
   name: "shop-slice",
   initialState,
   reducers: {
-    getData(state, { payload }) {
-      if (state.data.find((value) => value._id === payload._id)) {
-        state.data = state.data.map((value) => {
-          if (value._id === payload._id) {
-            return {
-              ...value,
-              counter: value.counter + 1,
-              userPrice: value.price * value.counter,
-            };
-          }
-          return value;
+    getData(state, action: PayloadAction<ProductType>) {
+      const existingItem = state.data.find(
+        (item) => item._id === action.payload._id,
+      );
+
+      if (existingItem) {
+        existingItem.counter += 1;
+        existingItem.userPrice = existingItem.price * existingItem.counter;
+      } else {
+        state.data.push({
+          ...action.payload,
+          counter: 1,
+          userPrice: action.payload.price,
         });
-        localStorage.setItem("shop", JSON.stringify(state.data));
-        return;
       }
-      state.data = [
-        ...state.data,
-        { ...payload, counter: 1, userPrice: payload.price },
-      ];
+
       localStorage.setItem("shop", JSON.stringify(state.data));
     },
-    deleteData(state, { payload }) {
-      state.data = state.data.filter((value) => value._id !== payload);
+
+    deleteData(state, action: PayloadAction<string>) {
+      state.data = state.data.filter((item) => item._id !== action.payload);
       localStorage.setItem("shop", JSON.stringify(state.data));
     },
-    increment(state, { payload }) {
-      state.data = state.data.map((value) => {
-        if (value._id === payload) {
-          return {
-            ...value,
-            counter: value.counter += 1,
-            userPrice: value.price * value.counter,
-          };
+
+    increment(state, action: PayloadAction<string>) {
+      const item = state.data.find((item) => item._id === action.payload);
+      if (item) {
+        item.counter += 1;
+        item.userPrice = item.price * item.counter;
+        localStorage.setItem("shop", JSON.stringify(state.data));
+      }
+    },
+
+    decrement(state, action: PayloadAction<string>) {
+      const item = state.data.find((item) => item._id === action.payload);
+      if (item) {
+        if (item.counter > 1) {
+          item.counter -= 1;
+          item.userPrice = item.price * item.counter;
+          localStorage.setItem("shop", JSON.stringify(state.data));
         }
-        return value;
-      });
-      localStorage.setItem("shop", JSON.stringify(state.data));
-    },
-    decrement(state, { payload }) {
-      state.data = state.data.map((value) => {
-        if (value._id === payload) {
-          return {
-            ...value,
-            counter: value.counter === 1 ? 1 : value.counter -= 1,
-            userPrice: value.price * value.counter,
-          };
-        }
-        return value;
-      });
-      localStorage.setItem("shop", JSON.stringify(state.data));
+      }
     },
   },
 });

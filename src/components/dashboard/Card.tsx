@@ -11,12 +11,24 @@ import { getData } from "../../redux/shop-slice";
 const Card = ({ product }: { product: ProductType }) => {
   const navigate = useNavigate();
   const [isMobileOpen, setIsMobileOpen] = useState(false);
+  const dispatch = useReduxDispatch();
+
+  const { data } = useReduxSelector((state) => state.shopSlice);
 
   const handleViewDetails = () => {
     navigate(`/shop/${product.category}/${product._id}`);
   };
-  const { data } = useReduxSelector((state) => state.shopSlice);
-  const dispatch = useReduxDispatch();
+
+  const isInCart = data.some((item: ProductType) => item._id === product._id);
+
+  const addToCart = (e: React.MouseEvent) => {
+    e.stopPropagation();
+
+    if (!isInCart) {
+      dispatch(getData(product));
+    }
+  };
+
   return (
     <div className="group">
       <div
@@ -26,10 +38,11 @@ const Card = ({ product }: { product: ProductType }) => {
           }
         }}
         className="
-          relative w-full h-[300px] bg-[#f2f2f2]
+          relative w-full h-[300px] bg-[#fbfbfb]
           flex items-center justify-center
           overflow-hidden transition-all duration-300
           group-hover:border-t-[2px] group-hover:border-[#46A358]
+          rounded-sm
         "
       >
         <img
@@ -42,9 +55,7 @@ const Card = ({ product }: { product: ProductType }) => {
           className={`
             absolute left-1/2 -translate-x-1/2 flex gap-4 z-20
             transition-all duration-300
-
             ${isMobileOpen ? "opacity-100 bottom-6" : "opacity-0 -bottom-10"}
-
             lg:opacity-0
             lg:-bottom-10
             lg:group-hover:opacity-100
@@ -52,13 +63,17 @@ const Card = ({ product }: { product: ProductType }) => {
           `}
         >
           <div
-            onClick={(e) => {
-              e.stopPropagation();
-              dispatch(getData(product));
-            }}
-            className="w-[35px] h-[35px] bg-white rounded-md flex items-center justify-center
-                       text-[#3D3D3D] hover:text-[#46A358]
-                       cursor-pointer shadow-md hover:-translate-y-[2px] transition-all"
+            onClick={addToCart}
+            className={`
+              w-[35px] h-[35px] rounded-md flex items-center justify-center
+              cursor-pointer shadow-md hover:-translate-y-[2px] transition-all
+              ${
+                isInCart
+                  ? "bg-[#46A358] text-white"
+                  : "bg-white text-[#3D3D3D] hover:text-[#46A358]"
+              }
+            `}
+            title={isInCart ? "Added to Cart" : "Add to Cart"}
           >
             <ShoppingCart size={20} />
           </div>
@@ -87,7 +102,7 @@ const Card = ({ product }: { product: ProductType }) => {
       </div>
 
       <div className="mt-3 flex flex-col items-center lg:items-start">
-        <h3 className="text-[#3D3D3D] text-[16px] font-normal">
+        <h3 className="text-[#3D3D3D] text-[16px] font-normal truncate w-full lg:text-start text-center">
           {product.title}
         </h3>
 

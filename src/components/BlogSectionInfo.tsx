@@ -38,6 +38,9 @@ const BlogSection = () => {
                 <div className="h-5 bg-gray-300 rounded w-3/4 mb-4"></div>
                 <div className="h-4 bg-gray-200 rounded mb-2"></div>
                 <div className="h-4 bg-gray-200 rounded mb-2"></div>
+                <div className="h-4 bg-gray-200 rounded mb-2"></div>
+                <div className="h-4 bg-gray-200 rounded mb-2"></div>
+                <div className="h-4 bg-gray-200 rounded mb-2"></div>
                 <div className="flex items-center justify-between mt-auto pt-4">
                   <div className="h-4 w-12 bg-gray-300 rounded"></div>
                   <div className="h-4 w-12 bg-gray-300 rounded"></div>

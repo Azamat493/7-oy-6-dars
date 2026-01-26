@@ -291,7 +291,7 @@ const CheckoutPage = () => {
             </div>
             <div className="flex justify-between items-center">
               <span className="text-[#3D3D3D]">Coupon Discount</span>
-              <span className="font-medium text-[#3D3D3D]">(-) 0.00</span>
+              <span className="font-medium text-[#3D3D3D]">-$0.00</span>
             </div>
             <div className="flex justify-between items-center">
               <span className="text-[#3D3D3D]">Shipping</span>

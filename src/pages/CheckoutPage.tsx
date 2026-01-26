@@ -185,7 +185,7 @@ const CheckoutPage = () => {
             >
               <Radio
                 value="paypal"
-                className="border border-[#46A358] mb-2! p-3! rounded-[12px] flex items-center w-[50%] "
+                className="border border-[#46A358] mb-2! p-3! rounded-[12px] flex items-center w-full sm:w-[50%] "
               >
                 <div className="flex gap-2 ml-2">
                   <img
@@ -216,14 +216,14 @@ const CheckoutPage = () => {
 
               <Radio
                 value="bank"
-                className="border border-[#46A358] mb-2! p-3! rounded-[12px] flex items-center w-[50%]"
+                className="border border-[#46A358] mb-2! p-3! rounded-[12px] flex items-center w-full sm:w-[50%]"
               >
                 Direct bank transfer
               </Radio>
 
               <Radio
                 value="cash"
-                className="border border-[#46A358] mb-2! p-3! rounded-[12px] flex items-center w-[50%]"
+                className="border border-[#46A358] mb-2! p-3! rounded-[12px] flex items-center w-full sm:w-[50%]"
               >
                 Cash on delivery
               </Radio>

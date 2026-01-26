@@ -2,7 +2,7 @@ import React from "react";
 import Ch9JE0GV from "../assets/images/1-Ch9JE0GV.png";
 import BqD2fIC7 from "../assets/images/2-BqD2fIC7.png";
 import Bg8f3bcT from "../assets/images/3-Bg8f3bcT.png";
-import CGk6Ds5n from "../assets/images/4-CGk6Ds5n.png";
+import CGk6D0183277n from "../assets/images/4-CGk6Ds5n.png";
 
 interface BlogPost {
   id: number;
@@ -42,7 +42,7 @@ const blogPosts: BlogPost[] = [
   },
   {
     id: 4,
-    imageUrl: CGk6Ds5n,
+    imageUrl: CGk6D0183277n,
     date: "September 12",
     readTime: "Read in 6 minutes",
     title: "Best Houseplants Room by Room",

@@ -21,6 +21,8 @@ const ShopPage = () => {
   const sort = getParam("sort") || "default-sorting";
   const category = getParam("category") || "house-plants";
 
+
+
   const [slider, setSlider] = useState<number[]>([range_min, range_max]);
 
   useEffect(() => {

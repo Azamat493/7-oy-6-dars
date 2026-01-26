@@ -91,7 +91,19 @@ export interface ProductsTitleType {
   route_path: string;
 }
 
-export interface ShopCartType extends ProductType{
+export interface ShopCartType extends ProductType {
   counter: number;
   userPrice: number;
+}
+
+export interface BlogType {
+  _id: string;
+  title: string;
+  short_description: string;
+  content: string;
+  created_by: string;
+  created_at: string;
+  reaction_length: number;
+  views?: number;
+
 }

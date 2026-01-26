@@ -48,7 +48,7 @@ const CartTotal = () => {
       <Prices />
 
       <button
-        onClick={() => navigate("/proced-checkout")}
+        onClick={() => navigate("/checkout")}
         className="bg-[#46A358] w-full cursor-pointer h-[45px] rounded-md text-white font-bold text-[15px] sm:text-[16px] mt-8 hover:bg-[#357a40] transition-colors uppercase shadow-md shadow-[#46a3584d]"
       >
         Proceed To Checkout

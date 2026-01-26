@@ -10,6 +10,7 @@ import { loaderApi } from "../../generic/loader/loaderApi";
 import Card from "./Card";
 import { useSearchParamsHandler } from "../../hooks/paramsApi/paramsApi";
 import ProductsTitle from "./products_title/ProductsTitleSection";
+import Discount from "./Discount";
 
 const ShopPage = () => {
   const { cateGoryLoader } = loaderApi();
@@ -20,8 +21,6 @@ const ShopPage = () => {
   const type = getParam("type") || "all-plants";
   const sort = getParam("sort") || "default-sorting";
   const category = getParam("category") || "house-plants";
-
-
 
   const [slider, setSlider] = useState<number[]>([range_min, range_max]);
 
@@ -48,7 +47,6 @@ const ShopPage = () => {
     isError: productsError,
   }: QueryType<ProductType[]> = useQueryHandler({
     url: `flower/category/${category}`,
-
     pathname: `products-${category}-${range_min}-${range_max}-${type}-${sort}`,
     param: {
       range_min,
@@ -124,10 +122,12 @@ const ShopPage = () => {
               sort,
             })
           }
-          className="bg-[#46a358] w-full mt-2 rounded-lg font-medium text-white p-[7px_25px] cursor-pointer"
+          className="bg-[#46a358] w-full mt-2 rounded-lg font-medium text-white p-[7px_25px] cursor-pointer transition-all duration-300 hover:bg-[#367e42] hover:shadow-lg"
         >
           Filter
         </button>
+
+        <Discount />
       </div>
 
       <div className="w-full lg:w-[75%]">

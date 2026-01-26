@@ -14,7 +14,7 @@ const Discount = () => {
       <h2 className="text-[#3d3d3d] font-bold text-[20px]">
         UP TO {data?.discoount_up_to}% OFF
       </h2>
-      <img src={data?.poster_image_url} alt="" />
+      <img src={data?.poster_image_url} alt="" className="w-[70%]"/>
     </div>
   );
 };

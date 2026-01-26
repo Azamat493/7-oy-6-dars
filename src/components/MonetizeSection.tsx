@@ -1,13 +1,23 @@
 import React from "react";
 import blogheaderhi2KeX2m from "../assets/images/blog-header-hi2KeX2m.png";
-import { useReduxDispatch } from "../hooks/useRedux/useRedux";
+import { useReduxDispatch, useReduxSelector } from "../hooks/useRedux/useRedux";
 import { setAuthorizationModalVisibility } from "../redux/modal-store";
 
 const MonetizeSection: React.FC = () => {
   const dispatch = useReduxDispatch();
+
+  // O'ZGARISH SHU YERDA: state.user emas, state.userSlice bo'lishi kerak
+  const user = useReduxSelector((state: any) => state.userSlice.user);
+
   const openAuthModal = () => {
     dispatch(setAuthorizationModalVisibility());
   };
+
+  // Agar user tizimga kirgan bo'lsa (user mavjud bo'lsa), section ko'rsatilmaydi
+  if (user) {
+    return null;
+  }
+
   return (
     <section className="py-5 sm:py-7 bg-white font-sans overflow-hidden">
       <div className="w-[95%] max-w-[1550px] sm:w-[90%] mx-auto">

@@ -6,6 +6,7 @@ import { useReduxDispatch } from "../../useRedux/useRedux";
 import { setAuthorizationModalVisibility } from "../../../redux/modal-store";
 import { getUser } from "../../../redux/user-slice";
 import { signInWithGoogle } from "../../../config/config";
+import { getCoupon } from "../../../redux/shop-slice";
 
 export const useLoginMutation = () => {
   const notify = notificationApi();
@@ -85,6 +86,31 @@ export const useOnAuthGoogle = () => {
         return notify("409");
       }
       notify("error");
+    },
+  });
+};
+
+export const useGetCoupon = () => {
+  const axios = useAxios();
+  const dispatch = useReduxDispatch();
+  const notify = notificationApi();
+
+  return useMutation({
+    mutationKey: ["coupon"],
+    mutationFn: ({ coupon_code }: { coupon_code: string }) =>
+      axios({
+        url: "features/coupon",
+        method: "GET", 
+        param: { coupon_code: coupon_code }, 
+      }),
+
+    onSuccess(data) {
+      console.log("Kupon ma'lumoti:", data); 
+      dispatch(getCoupon(data?.data?.discount_for || data?.discount_for)); 
+      notify("coupon");
+    },
+    onError(error) {
+      console.log("Xatolik:", error);
     },
   });
 };

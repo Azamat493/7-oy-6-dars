@@ -1,9 +1,26 @@
-import { Form } from "antd";
+import { Form } from "antd"; // Agar Form shart bo'lmasa, oddiy <form> yoki <div> ishlatsa ham bo'ladi
 import { Link, useNavigate } from "react-router-dom";
 import Prices from "../prices/Prices";
+import { useGetCoupon } from "../../../hooks/useQuery/useQueryAction/useQueryAction";
+import { useRef } from "react";
+import { LoadingOutlined } from "@ant-design/icons";
 
 const CartTotal = () => {
   const navigate = useNavigate();
+  const inputRef = useRef<HTMLInputElement>(null);
+  const { mutate, isPending } = useGetCoupon();
+
+  // Button bosilganda ishlaydigan funksiya
+  const getCoupon = (e: React.FormEvent | React.MouseEvent) => {
+    e.preventDefault(); // Sahifa yangilanib ketishini oldini oladi
+    const coupon: string = inputRef.current?.value || "";
+    
+    // Agar input bo'sh bo'lsa, so'rov yubormaymiz
+    if (!coupon.trim()) return; 
+
+    mutate({ coupon_code: coupon });
+  };
+
   return (
     <div className="w-full bg-[#fbfbfb] p-0 md:bg-transparent">
       <h3 className="pb-3 text-[#3D3D3D] border-b border-[#46A358]/50 font-bold text-[18px]">
@@ -12,8 +29,13 @@ const CartTotal = () => {
 
       <p className="text-[#3D3D3D] text-sm mt-6 mb-2">Coupon Apply</p>
 
-      <Form className="flex w-full mb-6 relative">
+      {/* 
+         1-O'ZGARISH: Form dagi onClick olib tashlandi. 
+         onSubmit qo'shildi (Enter bosganda ham ishlashi uchun) 
+      */}
+      <form onSubmit={getCoupon} className="flex w-full mb-6 relative">
         <input
+          ref={inputRef}
           name="coupon"
           placeholder="Enter coupon..."
           className="
@@ -27,6 +49,8 @@ const CartTotal = () => {
           "
         />
         <button
+          // 2-O'ZGARISH: Button type="submit" qilindi (yoki onClick shu yerga yozilishi kerak edi)
+          type="submit"
           className="
             absolute right-0 top-0
             h-10
@@ -41,9 +65,9 @@ const CartTotal = () => {
             transition-colors
           "
         >
-          Apply
+          {isPending ? <LoadingOutlined /> : <span>Apply</span>}
         </button>
-      </Form>
+      </form>
 
       <Prices />
 
@@ -57,15 +81,14 @@ const CartTotal = () => {
       <Link to={"/"} className="block mt-4">
         <button
           className="
-    bg-[#46a3591e] cursor-pointer
-    flex items-center justify-center gap-1
-    text-base text-[#46a358]
-    w-full h-[40px] rounded-md
-
-    hover:bg-[#46a358]
-    hover:text-white
-    transition-all duration-200
-  "
+            bg-[#46a3591e] cursor-pointer
+            flex items-center justify-center gap-1
+            text-base text-[#46a358]
+            w-full h-[40px] rounded-md
+            hover:bg-[#46a358]
+            hover:text-white
+            transition-all duration-200
+          "
         >
           Continue Shopping
         </button>

@@ -5,7 +5,9 @@ type NotificationType =
   | "409"
   | "confirm_password"
   | "register"
-  | "error";
+  | "error"
+  | "coupon";
+   
 export const notificationApi = () => {
   const notify = (type: NotificationType) => {
     switch (type) {
@@ -19,6 +21,8 @@ export const notificationApi = () => {
         return toast.success("Muvaffaqiyatli ro'yxatdan o'tdingiz!");
       case "error":
         return toast.error("Something error!");
+      case "coupon":
+        return toast.success("Chegirma qabul qilindi!");
     }
   };
   return notify;

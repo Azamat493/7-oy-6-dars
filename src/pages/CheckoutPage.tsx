@@ -9,15 +9,23 @@ const CheckoutPage = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState("cash");
 
-  const { data } = useSelector((state: any) => state.shopSlice);
+  // 1. Reduxdan 'coupon' ni ham oldik
+  const { data, coupon } = useSelector((state: any) => state.shopSlice);
 
+  // 2. Subtotalni hisoblash
   const subtotal =
     data?.reduce(
       (acc: number, item: ShopCartType) => acc + (item.userPrice || 0),
       0,
     ) || 0;
+
+  // 3. Chegirma va Totalni hisoblash
   const shipping = 16.0;
-  const total = subtotal + shipping;
+  const discountPercentage = Number(coupon) || 0;
+  const discountAmount = (subtotal * discountPercentage) / 100;
+  
+  // Formula: (Subtotal - Chegirma) + Dostavka
+  const total = subtotal - discountAmount + shipping;
 
   const date = new Date();
   const formattedDate = date.toLocaleDateString("en-US", {
@@ -28,7 +36,7 @@ const CheckoutPage = () => {
 
   const handlePlaceOrder = (e: React.FormEvent) => {
     e.preventDefault();
-    if (data.length === 0) {
+    if (!data || data.length === 0) {
       message.error("Your cart is empty!");
       return;
     }
@@ -42,6 +50,7 @@ const CheckoutPage = () => {
         onSubmit={handlePlaceOrder}
         className="flex flex-col md:flex-row gap-10"
       >
+        {/* Billing Address qismi o'zgarishsiz qoladi */}
         <div className="w-full md:w-[60%]">
           <h2 className="text-[17px] font-bold text-[#3D3D3D] mb-6">
             Billing Address
@@ -193,19 +202,16 @@ const CheckoutPage = () => {
                     alt="PayPal"
                     className="h-4"
                   />
-
                   <img
                     src="https://upload.wikimedia.org/wikipedia/commons/2/2a/Mastercard-logo.svg"
                     alt="MasterCard"
                     className="h-4"
                   />
-
                   <img
                     src="https://upload.wikimedia.org/wikipedia/commons/5/5e/Visa_Inc._logo.svg"
                     alt="Visa"
                     className="h-4"
                   />
-
                   <img
                     src="https://upload.wikimedia.org/wikipedia/commons/f/fa/American_Express_logo_%282018%29.svg"
                     alt="Amex"
@@ -244,6 +250,7 @@ const CheckoutPage = () => {
           </button>
         </div>
 
+        {/* --- YOUR ORDER QISMI (O'ng tomon) --- */}
         <div className="w-full md:w-[40%]">
           <h2 className="text-[17px] font-bold text-[#3D3D3D] mb-6">
             Your Order
@@ -282,6 +289,7 @@ const CheckoutPage = () => {
             ))}
           </div>
 
+          {/* TOTALS SECTION */}
           <div className="flex flex-col gap-3 border-t border-b py-4 mb-6">
             <div className="flex justify-between items-center">
               <span className="text-[#3D3D3D]">Subtotal</span>
@@ -289,10 +297,18 @@ const CheckoutPage = () => {
                 ${subtotal.toFixed(2)}
               </span>
             </div>
+            
+            {/* Coupon Discount qatori */}
             <div className="flex justify-between items-center">
-              <span className="text-[#3D3D3D]">Coupon Discount</span>
-              <span className="font-medium text-[#3D3D3D]">-$0.00</span>
+              <span className="text-[#3D3D3D]">
+                Coupon Discount 
+                {discountPercentage > 0 && <span className="ml-1 text-gray-500 text-xs">({discountPercentage}%)</span>}
+              </span>
+              <span className={`font-medium ${discountAmount > 0 ? "text-red-500" : "text-[#3D3D3D]"}`}>
+                -${discountAmount.toFixed(2)}
+              </span>
             </div>
+
             <div className="flex justify-between items-center">
               <span className="text-[#3D3D3D]">Shipping</span>
               <span className="font-medium text-[#3D3D3D]">
@@ -310,6 +326,8 @@ const CheckoutPage = () => {
           </div>
         </div>
       </form>
+      
+      {/* Mobile Button */}
       <form onSubmit={handlePlaceOrder} className="flex flex-col md:flex-row ">
         <div className="md:hidden flex flex-col gap-2 mb-6">
           <label className="text-[15px] text-[#3D3D3D]">
@@ -324,6 +342,8 @@ const CheckoutPage = () => {
           Place Order
         </button>
       </form>
+
+      {/* --- MODAL QISMI --- */}
       <Modal
         open={isModalOpen}
         onCancel={() => setIsModalOpen(false)}
@@ -362,6 +382,7 @@ const CheckoutPage = () => {
           </div>
           <div className="border-r last:border-0 md:pr-4">
             <p className="text-[12px] text-[#727272]">Total</p>
+            {/* Modalda ham chegirilgan narxni ko'rsatamiz */}
             <p className="text-[14px] font-bold text-[#3D3D3D]">
               ${total.toFixed(2)}
             </p>
@@ -410,6 +431,21 @@ const CheckoutPage = () => {
         </div>
 
         <div className="border-t pt-4">
+          {/* Modal ichidagi hisob-kitoblar */}
+          <div className="flex justify-between items-center mb-2">
+            <span className="text-[#3D3D3D]">Subtotal</span>
+            <span className="font-medium text-[#3D3D3D]">
+               ${subtotal.toFixed(2)}
+            </span>
+          </div>
+
+          <div className="flex justify-between items-center mb-2">
+            <span className="text-[#3D3D3D]">Discount</span>
+            <span className="font-medium text-red-500">
+               -${discountAmount.toFixed(2)}
+            </span>
+          </div>
+
           <div className="flex justify-between items-center mb-2">
             <span className="text-[#3D3D3D]">Shipping</span>
             <span className="font-medium text-[#3D3D3D]">

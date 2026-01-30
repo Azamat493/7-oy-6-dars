@@ -4,10 +4,12 @@ import type { ProductType, ShopCartType } from "../@types/AuthType";
 
 interface InitialStateType {
   data: ShopCartType[];
+  coupon: number;
 }
 
 const initialState: InitialStateType = {
   data: JSON.parse(localStorage.getItem("shop") as string) || [],
+  coupon: 0, 
 };
 
 const shopSlice = createSlice({
@@ -57,8 +59,11 @@ const shopSlice = createSlice({
         }
       }
     },
+      getCoupon(state, action: PayloadAction<number>) {
+      state.coupon = action.payload;
+    }
   },
 });
 
-export const { getData, deleteData, increment, decrement } = shopSlice.actions;
+export const { getData, deleteData, increment, decrement, getCoupon } = shopSlice.actions;
 export default shopSlice.reducer;

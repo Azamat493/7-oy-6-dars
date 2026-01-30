@@ -107,3 +107,10 @@ export interface BlogType {
   views?: number;
 
 }
+
+export interface CouponType {
+  code: string;
+  discount_for: number;
+  id: number;
+  title: string;
+}

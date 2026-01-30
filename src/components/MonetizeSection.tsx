@@ -6,14 +6,14 @@ import { setAuthorizationModalVisibility } from "../redux/modal-store";
 const MonetizeSection: React.FC = () => {
   const dispatch = useReduxDispatch();
 
-  // O'ZGARISH SHU YERDA: state.user emas, state.userSlice bo'lishi kerak
+ 
   const user = useReduxSelector((state: any) => state.userSlice.user);
 
   const openAuthModal = () => {
     dispatch(setAuthorizationModalVisibility());
   };
 
-  // Agar user tizimga kirgan bo'lsa (user mavjud bo'lsa), section ko'rsatilmaydi
+
   if (user) {
     return null;
   }

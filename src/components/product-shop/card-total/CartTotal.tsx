@@ -1,4 +1,4 @@
-import { Form } from "antd"; // Agar Form shart bo'lmasa, oddiy <form> yoki <div> ishlatsa ham bo'ladi
+
 import { Link, useNavigate } from "react-router-dom";
 import Prices from "../prices/Prices";
 import { useGetCoupon } from "../../../hooks/useQuery/useQueryAction/useQueryAction";
@@ -10,12 +10,11 @@ const CartTotal = () => {
   const inputRef = useRef<HTMLInputElement>(null);
   const { mutate, isPending } = useGetCoupon();
 
-  // Button bosilganda ishlaydigan funksiya
   const getCoupon = (e: React.FormEvent | React.MouseEvent) => {
-    e.preventDefault(); // Sahifa yangilanib ketishini oldini oladi
+    e.preventDefault(); 
     const coupon: string = inputRef.current?.value || "";
     
-    // Agar input bo'sh bo'lsa, so'rov yubormaymiz
+   
     if (!coupon.trim()) return; 
 
     mutate({ coupon_code: coupon });
@@ -29,10 +28,7 @@ const CartTotal = () => {
 
       <p className="text-[#3D3D3D] text-sm mt-6 mb-2">Coupon Apply</p>
 
-      {/* 
-         1-O'ZGARISH: Form dagi onClick olib tashlandi. 
-         onSubmit qo'shildi (Enter bosganda ham ishlashi uchun) 
-      */}
+  
       <form onSubmit={getCoupon} className="flex w-full mb-6 relative">
         <input
           ref={inputRef}

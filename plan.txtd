@@ -1,0 +1,69 @@
+1. Function nima?
+Function – bu biror ishni bajaradigan, kerak bo‘lsa qayta ishlatiladigan kod bo‘lagi.
+Masalan: hisoblash, xabar chiqarish, ma’lumot qaytarish.
+
+2. Funktsiyaning xususiyatlari
+Qayta ishlatiladi
+Dastur modullarga bo‘linadi
+Parametr qabul qilishi va natija qaytarishi mumkin
+
+Parametr (Parameter)
+Funktsiya e’lon qilinayotganda yoziladigan o‘zgaruvchi.
+Funktsiyaga tashqaridan ma’lumot kiritish imkonini beradi.
+
+Argument (Argument)
+Funktsiya chaqirilayotganda unga berilgan qiymat.
+Argument – parametrga tushadigan haqiqiy qiymat.
+
+Function Expression nima?
+Function Expression – funktsiyani o‘zgaruvchiga tayinlash orqali yaratish usuli.
+Funktsiya nomi majburiy emas, lekin bo‘lsa ham ishlaydi.
+Buni “anonymous function” deb ham ataladi (nomsiz funktsiya).
+
+Arrow Function nima?
+Arrow function – ES6’da paydo bo‘lgan qisqa sintaksisdagi funktsiya.
+Sintaksisi oddiy, ko‘proq function expression o‘rnida ishlatiladi.
+function kalit so‘zi ishlatilmaydi, uning o‘rniga => belgisi qo‘yiladi.
+
+Return
+return – funktsiyadan qiymat qaytarish uchun ishlatiladi.
+Funktsiya ichida return ishlatilsa, u yerda to‘xtaydi va berilgan qiymat 
+funksiyadan tashqariga chiqadi
+
+Qaytariladigan qiymat:
+return har qanday turdagi qiymatni qaytarishi mumkin: son, matn, massiv, object, 
+hatto boshqa funktsiya.
+
+Callback Function:
+Callback function – bu boshqa funktsiyaga argument sifatida uzatiladigan funktsiya.
+Ya’ni bir funktsiya ichida yana bir funktsiya chaqiriladi.
+Bu usul kodni asenkron (async) yoki ketma-ket bajariladigan qilishi uchun ishlatiladi.
+
+
+Higher-Order Function:
+Higher-Order Function – bu funksiyani argument sifatida qabul qiladigan yoki
+funktsiya qaytaradigan funktsiya.
+Ya’ni:
+Funktsiyani argument sifatida oladi
+Yoki funktsiya qaytaradi
+Callback functionlar HOF’ning bir turi hisoblanadi.
+
+IIFE (Immediately Invoked Function Expression):
+IIFE – bu darhol ishlaydigan funktsiya.
+E’lon qilinishi bilan shu paytda chaqiriladi.
+Ko‘pincha global o‘zgaruvchilarni ifodalashdan saqlanish yoki bir marta 
+bajariladigan kod uchun ishlatiladi.
+
+Pure va Impure Functions:
+Pure function – bu funktsiya:
+1. Har doim bir xil inputga bir xil output beradi
+2. Hech qanday tashqi o‘zgaruvchi yoki global state’ga ta’sir qilmaydi
+Foydasi: bashorat qilinadigan, test qilinishi oson va xatolik ehtimoli kam.
+
+Impure function – bu funktsiya:
+Tashqi state’ni o‘zgartiradi yoki unga bog‘liq
+Har doim bir xil inputga bir xil output bermasligi mumkin
+E’tibor kerak, chunki side-effect’lar (yon ta’sirlar) bo‘lishi mumkin.
+
+Pure function – ishonchli va bashorat qilinadigan kod
+Impure function – yon ta’sirga ega va ehtiyotkorlik bilan ishlatiladi

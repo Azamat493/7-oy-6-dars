@@ -100,17 +100,19 @@ export const useGetCoupon = () => {
     mutationFn: ({ coupon_code }: { coupon_code: string }) =>
       axios({
         url: "features/coupon",
-        method: "GET", 
-        param: { coupon_code: coupon_code }, 
+        method: "GET",
+        param: { coupon_code: coupon_code },
       }),
 
     onSuccess(data) {
-      console.log("Kupon ma'lumoti:", data); 
-      dispatch(getCoupon(data?.data?.discount_for || data?.discount_for)); 
+      console.log("Kupon ma'lumoti:", data);
+      dispatch(getCoupon(data?.data?.discount_for || data?.discount_for));
       notify("coupon");
     },
-    onError(error) {
-      console.log("Xatolik:", error);
+    onError(error: { status: number }) {
+      if (error.status === 400) {
+        notify("not_coupon");
+      }
     },
   });
 };

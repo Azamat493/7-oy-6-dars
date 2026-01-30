@@ -3,14 +3,17 @@ import Cookies from "js-cookie";
 import type { AuthType } from "../@types/AuthType";
 
 interface InitialStateType {
-  user?: AuthType;
+  user?: AuthType | null; // null bo'lishi ham mumkin
   isAuth: boolean;
 }
+
 const userCookie = Cookies.get("user");
+
 const initialState: InitialStateType = {
   user: userCookie ? JSON.parse(userCookie) : null,
-  isAuth: userCookie ? true : false,
+  isAuth: !!userCookie, // userCookie bor bo'lsa true, yo'q bo'lsa false
 };
+
 export const userSlice = createSlice({
   name: "user-slice",
   initialState,
@@ -19,8 +22,14 @@ export const userSlice = createSlice({
       state.user = action.payload;
       state.isAuth = true;
     },
+    // --- YANGI QO'SHILGAN QISM: LOGOUT ---
+    logout(state) {
+      state.user = null;  // User ma'lumotini o'chiramiz
+      state.isAuth = false; // Statusni false qilamiz
+    },
   },
 });
 
-export const { getUser } = userSlice.actions;
+// logout ni ham export qilishni unutmang!
+export const { getUser, logout } = userSlice.actions;
 export default userSlice.reducer;

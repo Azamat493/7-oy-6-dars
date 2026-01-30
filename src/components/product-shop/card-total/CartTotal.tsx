@@ -1,9 +1,10 @@
-
 import { Link, useNavigate } from "react-router-dom";
 import Prices from "../prices/Prices";
 import { useGetCoupon } from "../../../hooks/useQuery/useQueryAction/useQueryAction";
 import { useRef } from "react";
 import { LoadingOutlined } from "@ant-design/icons";
+import { message } from "antd";
+import Cookies from "js-cookie";
 
 const CartTotal = () => {
   const navigate = useNavigate();
@@ -11,13 +12,23 @@ const CartTotal = () => {
   const { mutate, isPending } = useGetCoupon();
 
   const getCoupon = (e: React.FormEvent | React.MouseEvent) => {
-    e.preventDefault(); 
+    e.preventDefault();
     const coupon: string = inputRef.current?.value || "";
-    
-   
-    if (!coupon.trim()) return; 
+
+    if (!coupon.trim()) return;
 
     mutate({ coupon_code: coupon });
+  };
+
+  const handleCheckout = () => {
+    const token = Cookies.get("token");
+
+    if (!token) {
+      message.warning("Iltimos, avval ro'yxatdan o'ting!");
+      navigate("/login");
+    } else {
+      navigate("/checkout");
+    }
   };
 
   return (
@@ -28,7 +39,6 @@ const CartTotal = () => {
 
       <p className="text-[#3D3D3D] text-sm mt-6 mb-2">Coupon Apply</p>
 
-  
       <form onSubmit={getCoupon} className="flex w-full mb-6 relative">
         <input
           ref={inputRef}
@@ -45,7 +55,6 @@ const CartTotal = () => {
           "
         />
         <button
-          // 2-O'ZGARISH: Button type="submit" qilindi (yoki onClick shu yerga yozilishi kerak edi)
           type="submit"
           className="
             absolute right-0 top-0
@@ -68,7 +77,7 @@ const CartTotal = () => {
       <Prices />
 
       <button
-        onClick={() => navigate("/checkout")}
+        onClick={handleCheckout}
         className="bg-[#46A358] w-full cursor-pointer h-[45px] rounded-md text-white font-bold text-[15px] sm:text-[16px] mt-8 hover:bg-[#357a40] transition-colors uppercase shadow-md shadow-[#46a3584d]"
       >
         Proceed To Checkout

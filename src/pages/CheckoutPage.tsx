@@ -2,30 +2,55 @@ import { useState } from "react";
 import { useSelector } from "react-redux";
 import { Modal, Radio, message } from "antd";
 import { useNavigate } from "react-router-dom";
-import type { ShopCartType } from "../@types/AuthType";
+import Cookies from "js-cookie";
+import type { ShopCartType, AuthType } from "../@types/AuthType";
+
+// Interfeyslar
+interface OrderDataType {
+  shop_list: ShopCartType[];
+  billing_address: {
+    name: string;
+    surname: string;
+    // Boshqa maydonlar
+  };
+  extra_shop_info: {
+    total: number;
+    method: string;
+  };
+}
 
 const CheckoutPage = () => {
   const navigate = useNavigate();
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [paymentMethod, setPaymentMethod] = useState("cash");
+  // const dispatch = useDispatch();
 
-  // 1. Reduxdan 'coupon' ni ham oldik
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [paymentMethod, setPaymentMethod] = useState("cash-on-delivery");
+
+  // Modalda ko'rsatish uchun state
+  const [orderDetails, setOrderDetails] = useState<OrderDataType | null>(null);
+
+  // 1. COOKIE DAN USER MA'LUMOTLARINI OLISH
+  const userCookie = Cookies.get("user");
+  const user: AuthType | null = userCookie ? JSON.parse(userCookie) : null;
+
+  // Redux ma'lumotlari
   const { data, coupon } = useSelector((state: any) => state.shopSlice);
 
-  // 2. Subtotalni hisoblash
-  const subtotal =
+  // --- HISOB-KITOB LOGIKASI (Prices komponentiga moslashtirildi) ---
+  const cartTotal =
     data?.reduce(
       (acc: number, item: ShopCartType) => acc + (item.userPrice || 0),
       0,
     ) || 0;
 
-  // 3. Chegirma va Totalni hisoblash
-  const shipping = 16.0;
-  const discountPercentage = Number(coupon) || 0;
-  const discountAmount = (subtotal * discountPercentage) / 100;
-  
-  // Formula: (Subtotal - Chegirma) + Dostavka
-  const total = subtotal - discountAmount + shipping;
+  const shippingCost = 16.0;
+  const couponPercentage = Number(coupon) || 0;
+
+  // Chegirma summasi
+  const discountAmount = (cartTotal * couponPercentage) / 100;
+
+  // Yakuniy summa: (Subtotal - Chegirma) + Dostavka
+  const finalTotal = cartTotal - discountAmount + shippingCost;
 
   const date = new Date();
   const formattedDate = date.toLocaleDateString("en-US", {
@@ -34,14 +59,43 @@ const CheckoutPage = () => {
     day: "numeric",
   });
 
-  const handlePlaceOrder = (e: React.FormEvent) => {
+  // --- STYLES (Prices komponentidan olindi) ---
+  const cupon_title_style = "text-[#3D3D3D] text-[15px] font-normal";
+
+  // --- FORM SUBMIT ---
+  const handlePlaceOrder = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!data || data.length === 0) {
-      message.error("Your cart is empty!");
+      message.error("Sizning savatingiz bo'sh!");
       return;
     }
 
+    const formData = new FormData(e.currentTarget);
+    const firstName = formData.get("firstname") as string;
+    const lastName = formData.get("lastname") as string;
+
+    const newOrderPayload: OrderDataType = {
+      shop_list: data,
+      billing_address: {
+        name: firstName || user?.name || "",
+        surname: lastName || user?.surname || "",
+      },
+      extra_shop_info: {
+        total: finalTotal, // Aniq hisoblangan summa
+        method: paymentMethod,
+      },
+    };
+
+    localStorage.setItem("latest_order", JSON.stringify(newOrderPayload));
+    setOrderDetails(newOrderPayload);
     setIsModalOpen(true);
+  };
+
+  const handleTrackOrder = () => {
+    localStorage.clear();
+    // dispatch(clearCart()); // Agar redux tozalanadigan bo'lsa
+    message.success("Buyurtma muvaffaqiyatli joylashtirilgan!");
+    navigate("/");
   };
 
   return (
@@ -50,7 +104,7 @@ const CheckoutPage = () => {
         onSubmit={handlePlaceOrder}
         className="flex flex-col md:flex-row gap-10"
       >
-        {/* Billing Address qismi o'zgarishsiz qoladi */}
+        {/* Billing Address qismi */}
         <div className="w-full md:w-[60%]">
           <h2 className="text-[17px] font-bold text-[#3D3D3D] mb-6">
             Billing Address
@@ -63,7 +117,9 @@ const CheckoutPage = () => {
               </label>
               <input
                 required
+                name="firstname"
                 type="text"
+                defaultValue={user?.name}
                 placeholder="Enter your first name..."
                 className="border border-[#EAEAEA] rounded p-2 focus:outline-[#46A358] placeholder:text-gray-400 placeholder:text-sm"
               />
@@ -74,7 +130,9 @@ const CheckoutPage = () => {
               </label>
               <input
                 required
+                name="lastname"
                 type="text"
+                defaultValue={user?.surname}
                 placeholder="Enter your last name..."
                 className="border border-[#EAEAEA] rounded p-2 placeholder:text-gray-400 placeholder:text-sm focus:outline-[#46A358]"
               />
@@ -88,7 +146,9 @@ const CheckoutPage = () => {
               </label>
               <input
                 required
+                name="country"
                 type="text"
+                defaultValue={user?.billing_address?.country}
                 placeholder="Enter your country / region..."
                 className="border border-[#EAEAEA] rounded p-2 placeholder:text-gray-400 placeholder:text-sm focus:outline-[#46A358]"
               />
@@ -99,7 +159,9 @@ const CheckoutPage = () => {
               </label>
               <input
                 required
+                name="town"
                 type="text"
+                defaultValue={user?.billing_address?.town}
                 placeholder="Enter your town / city..."
                 className="border border-[#EAEAEA] rounded p-2 placeholder:text-gray-400 placeholder:text-sm focus:outline-[#46A358]"
               />
@@ -113,7 +175,9 @@ const CheckoutPage = () => {
               </label>
               <input
                 required
+                name="street"
                 type="text"
+                defaultValue={user?.billing_address?.street_address}
                 placeholder="Enter your street..."
                 className="border border-[#EAEAEA] rounded p-2 placeholder:text-gray-400 placeholder:text-sm focus:outline-[#46A358]"
               />
@@ -122,6 +186,8 @@ const CheckoutPage = () => {
               <label className="text-[15px] text-[#3D3D3D]">&nbsp;</label>
               <input
                 type="text"
+                name="apartment"
+                defaultValue={user?.billing_address?.extra_address}
                 placeholder="Enter your apartment..."
                 className="border border-[#EAEAEA] rounded p-2 placeholder:text-gray-400 placeholder:text-sm focus:outline-[#46A358]"
               />
@@ -135,7 +201,9 @@ const CheckoutPage = () => {
               </label>
               <input
                 required
+                name="state"
                 type="text"
+                defaultValue={user?.billing_address?.state}
                 placeholder="Enter your state..."
                 className="border border-[#EAEAEA] rounded p-2 placeholder:text-gray-400 placeholder:text-sm focus:outline-[#46A358]"
               />
@@ -146,7 +214,9 @@ const CheckoutPage = () => {
               </label>
               <input
                 required
+                name="zip"
                 type="text"
+                defaultValue={user?.billing_address?.zip}
                 placeholder="Enter your zip code..."
                 className="border border-[#EAEAEA] rounded p-2 placeholder:text-gray-400 placeholder:text-sm focus:outline-[#46A358]"
               />
@@ -160,7 +230,9 @@ const CheckoutPage = () => {
               </label>
               <input
                 required
+                name="email"
                 type="email"
+                defaultValue={user?.email}
                 placeholder="Enter your email..."
                 className="border border-[#EAEAEA] rounded p-2 placeholder:text-gray-400 placeholder:text-sm focus:outline-[#46A358]"
               />
@@ -170,12 +242,14 @@ const CheckoutPage = () => {
                 Phone Number <span className="text-red-500">*</span>
               </label>
               <div className="flex border border-[#EAEAEA] rounded overflow-hidden">
-                <span className="p-2 border border-[#46A358]  bg-[#d2efd7] text-gray-500">
+                <span className="p-2 border border-[#46A358] bg-[#d2efd7] text-gray-500">
                   +998
                 </span>
                 <input
                   required
-                  type="number"
+                  name="phone"
+                  type="text"
+                  defaultValue={user?.phone_number}
                   placeholder="Enter your phone number..."
                   className="p-2 w-full focus:outline-[#46A358] placeholder:text-gray-400 placeholder:text-sm"
                 />
@@ -194,7 +268,7 @@ const CheckoutPage = () => {
             >
               <Radio
                 value="paypal"
-                className="border border-[#46A358] mb-2! p-3! rounded-[12px] flex items-center w-full sm:w-[50%] "
+                className="border border-[#46A358] mb-2! p-3! rounded-[12px] flex items-center w-full sm:w-[50%]"
               >
                 <div className="flex gap-2 ml-2">
                   <img
@@ -221,14 +295,14 @@ const CheckoutPage = () => {
               </Radio>
 
               <Radio
-                value="bank"
+                value="bank-transfer"
                 className="border border-[#46A358] mb-2! p-3! rounded-[12px] flex items-center w-full sm:w-[50%]"
               >
                 Direct bank transfer
               </Radio>
 
               <Radio
-                value="cash"
+                value="cash-on-delivery"
                 className="border border-[#46A358] mb-2! p-3! rounded-[12px] flex items-center w-full sm:w-[50%]"
               >
                 Cash on delivery
@@ -240,7 +314,10 @@ const CheckoutPage = () => {
             <label className="text-[15px] text-[#3D3D3D]">
               Enter your comment
             </label>
-            <textarea className="border border-[#EAEAEA] rounded p-2 h-[100px] focus:outline-[#46A358]" />
+            <textarea
+              name="comment"
+              className="border border-[#EAEAEA] rounded p-2 h-[100px] focus:outline-[#46A358]"
+            />
           </div>
           <button
             type="submit"
@@ -250,12 +327,11 @@ const CheckoutPage = () => {
           </button>
         </div>
 
-        {/* --- YOUR ORDER QISMI (O'ng tomon) --- */}
+        {/* --- YOUR ORDER QISMI (Prices dizayni bilan) --- */}
         <div className="w-full md:w-[40%]">
           <h2 className="text-[17px] font-bold text-[#3D3D3D] mb-6">
             Your Order
           </h2>
-
           <div className="flex flex-col gap-4 max-h-[400px] overflow-y-auto mb-6 pr-2">
             {data?.map((item: ShopCartType) => (
               <div
@@ -289,52 +365,46 @@ const CheckoutPage = () => {
             ))}
           </div>
 
-          {/* TOTALS SECTION */}
-          <div className="flex flex-col gap-3 border-t border-b py-4 mb-6">
+          {/* PRICES BO'LIMI (Prices.tsx kodi asosida) */}
+          <div className="flex flex-col gap-4 border-t border-b py-4 mb-6">
             <div className="flex justify-between items-center">
-              <span className="text-[#3D3D3D]">Subtotal</span>
-              <span className="font-medium text-[#3D3D3D]">
-                ${subtotal.toFixed(2)}
-              </span>
-            </div>
-            
-            {/* Coupon Discount qatori */}
-            <div className="flex justify-between items-center">
-              <span className="text-[#3D3D3D]">
-                Coupon Discount 
-                {discountPercentage > 0 && <span className="ml-1 text-gray-500 text-xs">({discountPercentage}%)</span>}
-              </span>
-              <span className={`font-medium ${discountAmount > 0 ? "text-red-500" : "text-[#3D3D3D]"}`}>
-                -${discountAmount.toFixed(2)}
-              </span>
+              <h3 className={cupon_title_style}>Subtotal</h3>
+              <h2 className="text-[#3D3D3D] text-[18px] font-medium">
+                ${cartTotal.toFixed(2)}
+              </h2>
             </div>
 
             <div className="flex justify-between items-center">
-              <span className="text-[#3D3D3D]">Shipping</span>
-              <span className="font-medium text-[#3D3D3D]">
-                ${shipping.toFixed(2)}
-              </span>
+              <h3 className={cupon_title_style}>Coupon Discount</h3>
+              <h2 className="text-[#3D3D3D] text-[15px] font-normal">
+                {coupon ? `${coupon}%` : "0%"}
+              </h2>
             </div>
-            <div className="flex justify-between items-center mt-2">
-              <span className="text-[#3D3D3D] font-bold text-[16px]">
-                Total
-              </span>
-              <span className="font-bold text-[#46A358] text-[18px]">
-                ${total.toFixed(2)}
-              </span>
+
+            <div className="flex justify-between items-center">
+              <h3 className={cupon_title_style}>Shipping</h3>
+              <h2 className="text-[#3D3D3D] text-[18px] font-medium">$16.00</h2>
+            </div>
+
+            <div className="flex justify-between items-center mt-4 pt-4 border-t border-[#46A358]/50">
+              <h2 className="text-[#3D3D3D] text-[16px] font-bold">Total</h2>
+              <h1 className="text-[#46A358] text-[20px] font-bold">
+                ${finalTotal.toFixed(2)}
+              </h1>
+            </div>
+
+            <div className="flex justify-end">
+              {Boolean(coupon) && (
+                <h1 className="text-red-500 text-[14px] font-bold">
+                  -${discountAmount.toFixed(2)}
+                </h1>
+              )}
             </div>
           </div>
         </div>
       </form>
-      
-      {/* Mobile Button */}
+
       <form onSubmit={handlePlaceOrder} className="flex flex-col md:flex-row ">
-        <div className="md:hidden flex flex-col gap-2 mb-6">
-          <label className="text-[15px] text-[#3D3D3D]">
-            Enter your comment
-          </label>
-          <textarea className="border border-[#EAEAEA] rounded p-2 h-[100px] focus:outline-[#46A358]" />
-        </div>
         <button
           type="submit"
           className="w-full md:hidden flex items-center justify-center cursor-pointer bg-[#46A358] text-white py-3 rounded text-[16px] font-bold hover:bg-[#357c44] transition-all"
@@ -343,7 +413,7 @@ const CheckoutPage = () => {
         </button>
       </form>
 
-      {/* --- MODAL QISMI --- */}
+      {/* --- MODAL QISMI (YANGILANGAN) --- */}
       <Modal
         open={isModalOpen}
         onCancel={() => setIsModalOpen(false)}
@@ -382,15 +452,14 @@ const CheckoutPage = () => {
           </div>
           <div className="border-r last:border-0 md:pr-4">
             <p className="text-[12px] text-[#727272]">Total</p>
-            {/* Modalda ham chegirilgan narxni ko'rsatamiz */}
             <p className="text-[14px] font-bold text-[#3D3D3D]">
-              ${total.toFixed(2)}
+              ${orderDetails?.extra_shop_info?.total.toFixed(2)}
             </p>
           </div>
           <div className="">
             <p className="text-[12px] text-[#727272]">Payment Method</p>
-            <p className="text-[14px] font-bold text-[#3D3D3D]">
-              {paymentMethod === "cash" ? "Cash on delivery" : paymentMethod}
+            <p className="text-[14px] font-bold text-[#3D3D3D] capitalize">
+              {orderDetails?.extra_shop_info?.method.replace(/-/g, " ")}
             </p>
           </div>
         </div>
@@ -400,7 +469,7 @@ const CheckoutPage = () => {
         </h3>
 
         <div className="flex flex-col gap-3 mb-4 max-h-[250px] overflow-y-auto">
-          {data?.map((item: ShopCartType) => (
+          {orderDetails?.shop_list?.map((item: ShopCartType) => (
             <div
               key={item._id}
               className="flex justify-between items-center bg-[#FBFBFB] p-2"
@@ -430,37 +499,44 @@ const CheckoutPage = () => {
           ))}
         </div>
 
-        <div className="border-t pt-4">
-          {/* Modal ichidagi hisob-kitoblar */}
-          <div className="flex justify-between items-center mb-2">
-            <span className="text-[#3D3D3D]">Subtotal</span>
-            <span className="font-medium text-[#3D3D3D]">
-               ${subtotal.toFixed(2)}
-            </span>
+        {/* --- MODAL ICHIDAGI PRICELAR (Prices.tsx uslubida) --- */}
+        <div className="border-t pt-4 flex flex-col gap-3">
+          <div className="flex justify-between items-center">
+            <h3 className={cupon_title_style}>Subtotal</h3>
+            <h2 className="text-[#3D3D3D] text-[18px] font-medium">
+              ${cartTotal.toFixed(2)}
+            </h2>
           </div>
 
-          <div className="flex justify-between items-center mb-2">
-            <span className="text-[#3D3D3D]">Discount</span>
-            <span className="font-medium text-red-500">
-               -${discountAmount.toFixed(2)}
-            </span>
+          <div className="flex justify-between items-center">
+            <h3 className={cupon_title_style}>Coupon Discount</h3>
+            <h2 className="text-[#3D3D3D] text-[15px] font-normal">
+              {coupon ? `${coupon}%` : "0%"}
+            </h2>
           </div>
 
-          <div className="flex justify-between items-center mb-2">
-            <span className="text-[#3D3D3D]">Shipping</span>
-            <span className="font-medium text-[#3D3D3D]">
-              ${shipping.toFixed(2)}
-            </span>
+          <div className="flex justify-between items-center">
+            <h3 className={cupon_title_style}>Shipping</h3>
+            <h2 className="text-[#3D3D3D] text-[18px] font-medium">$16.00</h2>
           </div>
-          <div className="flex justify-between items-center mb-4">
-            <span className="text-[#3D3D3D] font-bold">Total</span>
-            <span className="font-bold text-[#46A358] text-[18px]">
-              ${total.toFixed(2)}
-            </span>
+
+          <div className="flex justify-between items-center mt-2 pt-4 border-t border-[#46A358]/50">
+            <h2 className="text-[#3D3D3D] text-[16px] font-bold">Total</h2>
+            <h1 className="text-[#46A358] text-[20px] font-bold">
+              ${orderDetails?.extra_shop_info?.total.toFixed(2)}
+            </h1>
+          </div>
+
+          <div className="flex justify-end">
+            {Boolean(coupon) && (
+              <h1 className="text-red-500 text-[14px] font-bold">
+                -${discountAmount.toFixed(2)}
+              </h1>
+            )}
           </div>
         </div>
 
-        <p className="text-center text-[13px] text-[#727272] mb-6">
+        <p className="text-center text-[13px] text-[#727272] my-6">
           Your order is currently being processed. You will receive an order
           confirmation email shortly with the expected delivery date for your
           items.
@@ -468,7 +544,7 @@ const CheckoutPage = () => {
 
         <div className="flex justify-center">
           <button
-            onClick={() => navigate("/")}
+            onClick={handleTrackOrder}
             className="bg-[#46A358] cursor-pointer text-white font-bold py-3 px-10 rounded-full hover:bg-[#357c44] transition-all"
           >
             Track your order

@@ -6,7 +6,8 @@ type NotificationType =
   | "confirm_password"
   | "register"
   | "error"
-  | "coupon";
+  | "coupon"
+  | "not_coupon"
    
 export const notificationApi = () => {
   const notify = (type: NotificationType) => {
@@ -23,6 +24,8 @@ export const notificationApi = () => {
         return toast.error("Something error!");
       case "coupon":
         return toast.success("Chegirma qabul qilindi!");
+      case "not_coupon":
+        return toast.error("Chegirma aniqlanmadi!");
     }
   };
   return notify;

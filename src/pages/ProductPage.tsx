@@ -33,9 +33,7 @@ const ProductPage = () => {
       </div>
     );
 
-  const images = product.detailed_images?.length
-    ? product.detailed_images
-    : [product.main_image];
+  const images = [product.main_image, ...(product.detailed_images || [])];
 
   const currentImage = selectedImage || product.main_image;
 

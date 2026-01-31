@@ -70,13 +70,13 @@ const CheckoutPage = () => {
 
   const handlePlaceOrder = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (!data || data.length === 0) {
+      if (!data || !Array.isArray(data) || data.length === 0) {
       message.error("Sizning savatingiz bo'sh!");
       return;
     }
 
     const formData = new FormData(e.currentTarget);
-    const order_list = data.map((item: ShopCartType) => item._id);
+    const order_list = data?.map((item: ShopCartType) => item._id);
 
     const newOrderPayload: OrderDataType = {
       shop_list: data,
@@ -95,7 +95,7 @@ const CheckoutPage = () => {
       extra_shop_info: {
         total: finalTotal,
         method: paymentMethod,
-        date: dateObj.toISOString().split("T")[0],
+        date: new Date().toISOString(), 
       },
     };
 

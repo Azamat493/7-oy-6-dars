@@ -21,13 +21,7 @@ const Header = () => {
   const { user, isAuth } = useReduxSelector((state) => state.userSlice);
 
   const { data } = useReduxSelector((state) => state.shopSlice);
-  const menuItemStyle = (path: string) =>
-    `flex items-center gap-3 p-3 rounded-lg transition-all cursor-pointer
-   ${
-     pathname === path
-       ? "bg-[#E9F6EE] border-l-4 border-[#2F7D4E] text-[#2F7D4E] font-semibold"
-       : "text-[#4B5563] hover:bg-gray-100 hover:text-[#1F2937]"
-   }`;
+  
   useEffect(() => {
     const token = Cookies.get("token");
     const userData = Cookies.get("user");

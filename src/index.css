@@ -4,6 +4,14 @@
   --font-family: "Jost", sans-serif;
   --second-family: "Amatic SC", sans-serif;
 }
+html {
+  scrollbar-gutter: stable;
+}
+body {
+  width: 100vw;
+  overflow-x: hidden !important;
+}
+
 
 .custom-scroll {
   scrollbar-width: thin;

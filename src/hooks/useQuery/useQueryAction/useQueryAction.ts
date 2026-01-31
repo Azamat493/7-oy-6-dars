@@ -1,4 +1,4 @@
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useAxios } from "../../useAxios/UseAxios";
 import { notificationApi } from "../../../generic/notificationApi/NotificationApi";
 import Cookies from "js-cookie";
@@ -6,7 +6,7 @@ import { useReduxDispatch } from "../../useRedux/useRedux";
 import { setAuthorizationModalVisibility } from "../../../redux/modal-store";
 import { getUser } from "../../../redux/user-slice";
 import { signInWithGoogle } from "../../../config/config";
-import { getCoupon } from "../../../redux/shop-slice";
+import { getCoupon, clearCart } from "../../../redux/shop-slice";
 
 export const useLoginMutation = () => {
   const notify = notificationApi();
@@ -25,7 +25,6 @@ export const useLoginMutation = () => {
       dispatch(setAuthorizationModalVisibility());
     },
     onError(error: { status: number }) {
-      // console.log(error);
       if (error.status === 409) {
         notify("409");
       }
@@ -50,7 +49,6 @@ export const useRegisterMutation = () => {
       dispatch(setAuthorizationModalVisibility());
     },
     onError(error: { status: number }) {
-      // console.log(error);
       if (error.status === 409) {
         notify("409");
       }
@@ -117,4 +115,60 @@ export const useGetCoupon = () => {
   });
 };
 
+export const useMakeOrderMutation = () => {
+  const axios = useAxios();
 
+  const dispatch = useReduxDispatch();
+
+  return useMutation({
+    mutationKey: ["make-order"],
+    mutationFn: (body: object) =>
+      axios({
+        url: "order/make-order",
+        method: "POST",
+        body,
+      }),
+    onSuccess: () => {
+      dispatch(clearCart());
+      localStorage.removeItem("shop");
+    },
+    onError: (error) => {
+      console.log(error);
+    },
+  });
+};
+
+export const useGetOrdersQuery = () => {
+  const axios = useAxios();
+
+  return useQuery({
+    queryKey: ["get-orders"],
+    queryFn: () =>
+      axios({
+        url: "order/get-order",
+        method: "GET",
+      }),
+    refetchOnWindowFocus: false,
+  });
+};
+
+export const useDeleteOrderMutation = () => {
+  const axios = useAxios();
+  const notify = notificationApi();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationKey: ["delete-order"],
+    mutationFn: (id: string) =>
+      axios({
+        url: "order/delete-order",
+        method: "DELETE",
+        body: { _id: id },
+      }),
+    onSuccess: () => {
+      notify("order-delete");
+      queryClient.invalidateQueries({ queryKey: ["get-orders"] });
+    },
+    onError: () => notify("error"),
+  });
+};

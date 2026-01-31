@@ -73,7 +73,7 @@ const Profile = () => {
   };
 
   return (
-    <div className="w-[90%] max-w-[1200px] m-auto mt-10 mb-20 flex flex-col md:flex-row gap-10">
+    <div className="w-[90%] max-w-[1550px] m-auto mt-10 mb-20 flex flex-col md:flex-row gap-10">
       <div className="w-full md:w-[30%] lg:w-[25%] bg-[#FBFBFB] h-fit py-4 rounded-md">
         <h2 className="text-[18px] font-bold text-[#3D3D3D] px-6 mb-4">
           My Account
@@ -198,6 +198,12 @@ const Profile = () => {
         cancelText="Cancel"
         okButtonProps={{ danger: true }}
         centered
+          styles={{
+        mask: {
+          backdropFilter: "none",
+          backgroundColor: "rgba(0,0,0,0.45)",
+        },
+      }}
       >
         <p>Are you sure you want to log out from your account?</p>
       </Modal>

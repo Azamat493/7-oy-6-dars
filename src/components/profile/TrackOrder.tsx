@@ -1,5 +1,24 @@
+import { useDispatch } from "react-redux";
+import { useGetOrdersQuery } from "../../hooks/useQuery/useQueryAction/useQueryAction";
+import { setOpenDeleteOrderModal } from "../../redux/modal-store";
+import { Spin, Alert } from "antd";
+import DeleteOrderModalStory from "../modals/DeleteOrderModalStory";
+
 const TrackOrder = () => {
-  const orders = JSON.parse(localStorage.getItem("order_history") || "[]");
+  const dispatch = useDispatch();
+  const { data: orders, isLoading, isError } = useGetOrdersQuery();
+
+  const handleOpenMoreInfo = (order: any) => {
+    dispatch(setOpenDeleteOrderModal({ open: true, data: order }));
+  };
+
+  if (isLoading)
+    return (
+      <div className="flex justify-center mt-10">
+        <Spin size="large" />
+      </div>
+    );
+  if (isError) return <Alert message="Error loading orders" type="error" />;
 
   return (
     <div className="w-full">
@@ -25,39 +44,46 @@ const TrackOrder = () => {
           </div>
 
           <div className="flex flex-col">
-            {orders.length > 0 ? (
-              [...orders].reverse().map((order: any, index: number) => (
+            {orders && orders.length > 0 ? (
+              [...orders].reverse().map((order: any) => (
                 <div
-                  key={index}
+                  key={order._id}
                   className="grid grid-cols-[1.5fr_1fr_1fr_1fr] items-center px-6 py-5 border-b border-gray-50 hover:bg-gray-50/50 transition-all"
                 >
                   <div className="text-[#46A358] font-bold text-[14px]">
-                    #{order.orderId}
+                    #{order._id?.slice(-8).toUpperCase()}
                   </div>
 
                   <div className="text-center text-[#727272] text-[14px]">
-                    {order.date}
+                    {new Date(
+                      order.createdAt || order.extra_shop_info?.date,
+                    ).toLocaleDateString("en-GB")}
                   </div>
 
                   <div className="text-center text-[#3D3D3D] font-bold text-[14px]">
-                    ${Number(order.total).toFixed(2)}
+                    ${Number(order.extra_shop_info?.total).toFixed(2)}
                   </div>
 
                   <div className="text-right pr-2">
-                    <button className="text-[13px] font-bold text-[#3D3D3D] hover:text-[#46A358] cursor-pointer transition-colors border border-gray-200 px-4 py-1.5 rounded-md">
-                      View details
+                    <button
+                      onClick={() => handleOpenMoreInfo(order)}
+                      className="text-[13px] font-bold text-[#3D3D3D] hover:text-[#46A358] cursor-pointer transition-colors border border-gray-200 px-4 py-1.5 rounded-md hover:border-[#46A358]"
+                    >
+                      More Info
                     </button>
                   </div>
                 </div>
               ))
             ) : (
               <div className="py-20 text-center text-gray-400 italic">
-                No orders history available.
+                No orders found.
               </div>
             )}
           </div>
         </div>
       </div>
+
+      <DeleteOrderModalStory />
     </div>
   );
 };

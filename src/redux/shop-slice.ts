@@ -9,7 +9,7 @@ interface InitialStateType {
 
 const initialState: InitialStateType = {
   data: JSON.parse(localStorage.getItem("shop") as string) || [],
-  coupon: 0, 
+  coupon: 0,
 };
 
 const shopSlice = createSlice({
@@ -18,7 +18,7 @@ const shopSlice = createSlice({
   reducers: {
     getData(state, action: PayloadAction<ProductType>) {
       const existingItem = state.data.find(
-        (item) => item._id === action.payload._id,
+        (item) => item._id === action.payload._id
       );
 
       if (existingItem) {
@@ -59,12 +59,27 @@ const shopSlice = createSlice({
         }
       }
     },
-      getCoupon(state, action: PayloadAction<number>) {
+
+    getCoupon(state, action: PayloadAction<number>) {
       state.coupon = action.payload;
     },
-      
+
+    // Yangi qo'shilgan qism
+    clearCart(state) {
+      state.data = [];
+      state.coupon = 0;
+      localStorage.removeItem("shop"); // Yoki localStorage.setItem("shop", "[]");
+    },
   },
 });
 
-export const { getData, deleteData, increment, decrement, getCoupon } = shopSlice.actions;
+export const {
+  getData,
+  deleteData,
+  increment,
+  decrement,
+  getCoupon,
+  clearCart, // Exportga qo'shildi
+} = shopSlice.actions;
+
 export default shopSlice.reducer;

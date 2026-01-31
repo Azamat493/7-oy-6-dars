@@ -1,9 +1,12 @@
 import { useState } from "react";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { Modal, Radio, message } from "antd";
 import { useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
 import type { ShopCartType, AuthType } from "../@types/AuthType";
+
+import { useMakeOrderMutation } from "../hooks/useQuery/useQueryAction/useQueryAction"; // Yo'lni o'zingizniki bo'yicha to'g'rilab olasiz
+import { clearCart } from "../redux/shop-slice";
 
 interface OrderDataType {
   shop_list: ShopCartType[];
@@ -28,10 +31,16 @@ interface OrderDataType {
 
 const CheckoutPage = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+
+  const { mutate, isPending } = useMakeOrderMutation();
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState("cash-on-delivery");
-  const [orderDetails, setOrderDetails] = useState<OrderDataType | null>(null);
+
+  const [tempOrderData, setTempOrderData] = useState<OrderDataType | null>(
+    null,
+  );
 
   const userCookie = Cookies.get("user");
   const user: AuthType | null = userCookie ? JSON.parse(userCookie) : null;
@@ -67,7 +76,6 @@ const CheckoutPage = () => {
     }
 
     const formData = new FormData(e.currentTarget);
-
     const order_list = data.map((item: ShopCartType) => item._id);
 
     const newOrderPayload: OrderDataType = {
@@ -91,30 +99,28 @@ const CheckoutPage = () => {
       },
     };
 
-    const existingHistory = JSON.parse(
-      localStorage.getItem("order_history") || "[]",
-    );
-    const historyEntry = {
-      orderId: Math.floor(10000000 + Math.random() * 90000000).toString(),
-      date: newOrderPayload.extra_shop_info.date,
-      total: finalTotal,
-      method: paymentMethod,
-      items: order_list,
-    };
-    localStorage.setItem(
-      "order_history",
-      JSON.stringify([...existingHistory, historyEntry]),
-    );
-
-    setOrderDetails(newOrderPayload);
+    setTempOrderData(newOrderPayload);
     setIsModalOpen(true);
   };
 
   const handleTrackOrder = () => {
-    localStorage.removeItem("shopSlice");
-    message.success("Buyurtma muvaffaqiyatli joylashtirilgan!");
-    setIsModalOpen(false);
-    navigate("/profile/track-order");
+    if (!tempOrderData) return;
+
+    mutate(tempOrderData, {
+      onSuccess: () => {
+        dispatch(clearCart());
+
+        localStorage.removeItem("shop");
+
+        message.success("Buyurtma muvaffaqiyatli joylashtirilgan!");
+
+        setIsModalOpen(false);
+        navigate("/profile/track-order");
+      },
+      onError: () => {
+        message.error("Xatolik yuz berdi. Qayta urinib ko'ring.");
+      },
+    });
   };
 
   return (
@@ -469,7 +475,10 @@ const CheckoutPage = () => {
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 border-b pb-4 mb-4 mt-4 text-center md:text-left">
           <div>
             <p className="text-[12px] text-[#727272]">Order Number</p>
-            <p className="text-[14px] font-bold text-[#3D3D3D]">19586687</p>
+
+            <p className="text-[14px] font-bold text-[#3D3D3D]">
+              {(Math.random() * 100000000).toFixed(0)}
+            </p>
           </div>
           <div>
             <p className="text-[12px] text-[#727272]">Date</p>
@@ -480,13 +489,13 @@ const CheckoutPage = () => {
           <div>
             <p className="text-[12px] text-[#727272]">Total</p>
             <p className="text-[14px] font-bold text-[#3D3D3D]">
-              ${orderDetails?.extra_shop_info?.total.toFixed(2)}
+              ${tempOrderData?.extra_shop_info?.total.toFixed(2)}
             </p>
           </div>
           <div>
             <p className="text-[12px] text-[#727272]">Payment Method</p>
             <p className="text-[14px] font-bold text-[#3D3D3D] capitalize">
-              {orderDetails?.extra_shop_info?.method.replace(/-/g, " ")}
+              {tempOrderData?.extra_shop_info?.method.replace(/-/g, " ")}
             </p>
           </div>
         </div>
@@ -495,7 +504,7 @@ const CheckoutPage = () => {
           Order Details
         </h3>
         <div className="flex flex-col gap-3 mb-4 max-h-[250px] overflow-y-auto">
-          {orderDetails?.shop_list?.map((item: ShopCartType) => (
+          {tempOrderData?.shop_list?.map((item: ShopCartType) => (
             <div
               key={item._id}
               className="flex justify-between items-center bg-[#FBFBFB] p-2"
@@ -533,7 +542,7 @@ const CheckoutPage = () => {
           <div className="flex justify-between items-center mt-2 pt-4 border-t border-[#46A358]/50">
             <h2 className="text-[#3D3D3D] text-[16px] font-bold">Total</h2>
             <h1 className="text-[#46A358] text-[20px] font-bold">
-              ${orderDetails?.extra_shop_info?.total.toFixed(2)}
+              ${tempOrderData?.extra_shop_info?.total.toFixed(2)}
             </h1>
           </div>
           <div className="flex justify-end">
@@ -548,9 +557,13 @@ const CheckoutPage = () => {
         <div className="flex justify-center mt-10">
           <button
             onClick={handleTrackOrder}
-            className="bg-[#46A358] text-white font-bold py-3 px-10 rounded-full hover:bg-[#357c44] transition-all cursor-pointer"
+            disabled={isPending}
+            className={`bg-[#46A358] text-white font-bold py-3 px-10 rounded-full
+              transition-all cursor-pointer
+              ${!isPending ? "hover:bg-[#357c44]" : ""}
+              disabled:bg-[#46A358] disabled:cursor-not-allowed`}
           >
-            Track your order
+            {isPending ? "Processing..." : "Track your order"}
           </button>
         </div>
       </Modal>

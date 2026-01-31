@@ -13,8 +13,7 @@ import {
 import { useQueryHandler } from "../hooks/useQuery/UseQuery";
 import coverImg from "../assets/images/1641858083_1-abrakadabra-fun-p-krasivii-fon-dlya-zastavki-1.jpg";
 
-const DEFAULT_COVER =
-  "https://images.unsplash.com/photo-1558591710-4b4a1ae0f04d?q=80&w=1287&auto=format&fit=crop";
+
 const DEFAULT_AVATAR = "https://cdn-icons-png.flaticon.com/512/149/149071.png";
 
 interface UserProfileType {

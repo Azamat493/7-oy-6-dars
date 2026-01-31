@@ -7,7 +7,7 @@ import { setAuthorizationModalVisibility } from "../../../redux/modal-store";
 import { getUser } from "../../../redux/user-slice";
 import { signInWithGoogle } from "../../../config/config";
 import { getCoupon, clearCart } from "../../../redux/shop-slice";
-import type { WishlistObj } from "../../../@types/AuthType";
+
 
 export const useLoginMutation = () => {
   const notify = notificationApi();

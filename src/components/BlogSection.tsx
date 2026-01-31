@@ -53,7 +53,7 @@ const blogPosts: BlogPost[] = [
 const BlogSection: React.FC = () => {
   return (
     <section className="py-12 bg-white">
-      <div className="max-w-[1550] w-[90%] mx-auto px-4 max-w-7xl">
+      <div className="max-w-[1550px] w-[90%] mx-auto px-4">
         <div className="text-center mb-10">
           <h2 className="text-3xl font-bold text-gray-800 mb-2">
             Our Blog Posts

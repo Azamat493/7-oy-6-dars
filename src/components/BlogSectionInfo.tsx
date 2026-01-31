@@ -27,11 +27,11 @@ const BlogSectionInfo = () => {
   const [filteredBlogs, setFilteredBlogs] = useState<BlogType[]>([]);
   const [isSearching, setIsSearching] = useState(false);
 
-  const { data: apiData = [], isLoading: apiLoading } = useQueryHandler({
-    url: "user/blog",
-    pathname: "blog",
-    param: { search: "" },
-  });
+ const { data: apiData = [], isLoading: apiLoading } = useQueryHandler({
+  url: "user/blog",
+  pathname: "blog",
+  param: { search: searchTerm }, 
+});
 
   useEffect(() => {
     if (apiData.length > 0) {

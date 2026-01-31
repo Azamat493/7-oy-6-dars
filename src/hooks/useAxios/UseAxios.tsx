@@ -15,6 +15,7 @@ export const useAxios = () => {
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${Cookies.get("token")}`,
+        
       },
       data: body,
       params: {

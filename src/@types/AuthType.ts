@@ -105,7 +105,6 @@ export interface BlogType {
   created_at: string;
   reaction_length: number;
   views?: number;
-
 }
 
 export interface CouponType {
@@ -113,4 +112,13 @@ export interface CouponType {
   discount_for: number;
   id: number;
   title: string;
+}
+
+export interface WishlistObj {
+  route_path: string;
+  flower_id: string;
+}
+
+export interface AuthUser extends Omit<AuthType, "wishlist"> {
+  wishlist: WishlistObj[]; // endi wishlist object array
 }

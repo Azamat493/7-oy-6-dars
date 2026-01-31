@@ -19,8 +19,15 @@ const Header = () => {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
   const { user, isAuth } = useReduxSelector((state) => state.userSlice);
-  const { data } = useReduxSelector((state) => state.shopSlice);
 
+  const { data } = useReduxSelector((state) => state.shopSlice);
+  const menuItemStyle = (path: string) =>
+    `flex items-center gap-3 p-3 rounded-lg transition-all cursor-pointer
+   ${
+     pathname === path
+       ? "bg-[#E9F6EE] border-l-4 border-[#2F7D4E] text-[#2F7D4E] font-semibold"
+       : "text-[#4B5563] hover:bg-gray-100 hover:text-[#1F2937]"
+   }`;
   useEffect(() => {
     const token = Cookies.get("token");
     const userData = Cookies.get("user");
@@ -44,6 +51,11 @@ const Header = () => {
     setIsDrawerOpen(false);
   };
 
+  const totalCartCount = data.reduce(
+    (acc, item) => acc + (item.counter || 1),
+    0,
+  );
+
   return (
     <div className="py-3 border-b border-[#00800043] sticky top-0 bg-white z-50">
       <div className="w-[90%] max-w-[1550px] m-auto flex items-center justify-between">
@@ -65,6 +77,7 @@ const Header = () => {
           >
             Home
           </Link>
+
           <Link
             to={"/blog"}
             className={`${
@@ -96,7 +109,7 @@ const Header = () => {
           />
 
           <div onClick={() => navigate("/shop")} className="cursor-pointer">
-            <Badge count={data.length} showZero color="#46A358">
+            <Badge count={totalCartCount} showZero color="#46A358">
               <svg
                 width="24"
                 height="24"
@@ -138,7 +151,6 @@ const Header = () => {
         </div>
       </div>
 
-      {/* MOBILE DRAWER */}
       <Drawer
         placement="right"
         onClose={() => setIsDrawerOpen(false)}
@@ -147,39 +159,42 @@ const Header = () => {
         styles={{ body: { padding: 0 } }}
         size={280}
         title={
-          <div className="flex items-center justify-between w-full">
-            <img src={Logo} alt="Logo" className="w-[100px]" />
+          <div className="flex items-center justify-between w-full bg-gradient-to-r from-[#46A358] to-[#5cbf73] p-4 rounded-b-xl">
+            <img
+              src={Logo}
+              alt="Logo"
+              className="w-[90px] brightness-0 invert"
+            />
             <X
-              className="w-6 h-6 text-[#3d3d3d] cursor-pointer hover:text-red-500 transition-colors"
+              className="w-6 h-6 text-white cursor-pointer hover:rotate-90 transition-transform"
               onClick={() => setIsDrawerOpen(false)}
             />
           </div>
         }
       >
         <div className="flex flex-col p-5 gap-4">
-          <Link
-            to={"/"}
-            onClick={() => setIsDrawerOpen(false)}
-            className={`${
-              pathname === "/" ? "bg-[#46A358] text-white" : "text-[#3d3d3d]"
-            } p-3 rounded-md font-medium text-[16px] transition-all`}
-          >
-            Home
-          </Link>
-          <Link
-            to={"/blog"}
-            onClick={() => setIsDrawerOpen(false)}
-            className={`${
-              pathname === "/blog"
-                ? "bg-[#46A358] text-white"
-                : "text-[#3d3d3d]"
-            } p-3 rounded-md font-medium text-[16px] transition-all`}
-          >
-            Blog
-          </Link>
+          <div className="flex flex-col gap-2 mt-4">
+            <Link
+              to="/"
+              onClick={() => setIsDrawerOpen(false)}
+              className="flex items-center gap-3 p-3 rounded-lg transition-all cursor-pointer"
+              style={{ color: pathname === "/" ? "#2F7D4E" : "#4B5563" }}
+            >
+              <span className="text-[16px] font-medium">Home</span>
+            </Link>
+
+            <Link
+              to="/blog"
+              onClick={() => setIsDrawerOpen(false)}
+              className="flex items-center gap-3 p-3 rounded-lg transition-all cursor-pointer"
+              style={{ color: pathname === "/blog" ? "#2F7D4E" : "#4B5563" }} // 🟢 Blog rang
+            >
+              <span className="text-[16px] font-medium">Blog</span>
+            </Link>
+          </div>
 
           <div className="h-[1px] bg-gray-200 my-2"></div>
-          <div className="flex items-center gap-4 px-3 py-2">
+          <div className="flex items-center gap-3 px-3 py-2">
             <svg
               width="20"
               height="20"
@@ -192,13 +207,18 @@ const Header = () => {
                 fill="currentColor"
               />
             </svg>
-            <span>Search</span>
-          </div>
-          <div className="flex items-center gap-4 px-3 py-2 cursor-pointer hover:bg-gray-50 rounded-md">
-            <Bell size={20} />
-            <span className="text-[#3d3d3d] font-medium">Notifications</span>
+            <h1 className="text-[#3D3D3D] font-medium text-sm">Search</h1>
           </div>
 
+          <div className="flex items-center gap-3 px-3 py-2">
+            <Bell
+              className="cursor-pointer text-[#3D3D3D] hover:text-[#46A358]"
+              size={22}
+            />
+            <h1 className="text-[#3D3D3D] font-medium text-sm">
+              Notifications
+            </h1>
+          </div>
           <div
             onClick={() => {
               navigate("/shop");
@@ -206,7 +226,7 @@ const Header = () => {
             }}
             className="flex items-center gap-3 px-3 py-2 cursor-pointer rounded-md hover:bg-gray-50 transition-colors"
           >
-            <Badge count={data.length} size="small" showZero color="#46A358">
+            <Badge count={totalCartCount} size="small" showZero color="#46A358">
               <div className="relative text-[#3D3D3D]">
                 <svg
                   width="20"
@@ -227,22 +247,22 @@ const Header = () => {
             <span className="text-[#3D3D3D] font-medium text-sm">My Cart</span>
           </div>
 
-          <button
-            onClick={handleAuthButtonClick}
-            className="bg-[#46a358] hover:bg-[#3d8f4d] active:scale-95 transition-all mt-4 rounded-md cursor-pointer font-medium text-base text-white py-2 w-full flex items-center justify-center gap-2"
-          >
-            {isAuth && user ? (
-              <>
-                <User size={20} />
-                {user.name}
-              </>
-            ) : (
-              <>
-                <LogIn size={20} />
-                Login
-              </>
-            )}
-          </button>
+          <div className="mt-6 bg-gray-50 p-4 rounded-xl shadow-sm">
+            <button
+              onClick={handleAuthButtonClick}
+              className="w-full bg-[#46A358] hover:bg-[#3d8f4d] text-white rounded-lg py-2 flex items-center justify-center gap-2 transition-all"
+            >
+              {isAuth && user ? (
+                <>
+                  <User size={18} /> {user.name}
+                </>
+              ) : (
+                <>
+                  <LogIn size={18} /> Login
+                </>
+              )}
+            </button>
+          </div>
         </div>
       </Drawer>
     </div>

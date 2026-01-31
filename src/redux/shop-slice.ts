@@ -61,7 +61,8 @@ const shopSlice = createSlice({
     },
       getCoupon(state, action: PayloadAction<number>) {
       state.coupon = action.payload;
-    }
+    },
+      
   },
 });
 

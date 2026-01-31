@@ -16,44 +16,42 @@ export const router = createBrowserRouter([
   {
     path: "/",
     element: <MainLayout />,
-    errorElement: <ErrorPage />, 
+    errorElement: <ErrorPage />,
     children: [
       { path: "/", element: <Home /> },
       { path: "/blog", element: <Blog /> },
-      
-      // --- PROFILE ROUTE (O'ZGARISH SHU YERDA) ---
-      // 1. Asosiy profile sahifasi (default)
-      { 
-        path: "/profile", 
+
+      {
+        path: "/profile",
         element: (
           <ProtectedRoute>
             <Profile />
           </ProtectedRoute>
-        ) 
+        ),
       },
-      // 2. Tablar uchun dinamik route (/profile/address, /profile/wishlist va h.k.)
-      { 
-        path: "/profile/:tab", 
+
+      {
+        path: "/profile/:tab",
         element: (
           <ProtectedRoute>
             <Profile />
           </ProtectedRoute>
-        ) 
+        ),
       },
-      
+
       { path: "/shop", element: <Shop /> },
       { path: "/shop/:category/:id", element: <ProductPage /> },
       { path: "/blog/:id", element: <BlogDetail /> },
-      
-      { 
-        path: "/checkout", 
+
+      {
+        path: "/checkout",
         element: (
           <ProtectedRoute>
             <CheckoutPage />
           </ProtectedRoute>
-        ) 
+        ),
       },
-      
+
       { path: "*", element: <ErrorPage /> },
     ],
   },

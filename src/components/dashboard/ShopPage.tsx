@@ -150,9 +150,9 @@ const ShopPage = () => {
             ))
           ) : (
             productsData?.map((product) => (
-              <Card key={product._id} product={product} />
-            ))
-          )}
+          <Card key={product._id} product={product} />
+        ))
+      )}
         </div>
       </div>
     </div>

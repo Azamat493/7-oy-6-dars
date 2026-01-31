@@ -2,6 +2,7 @@ import React from "react";
 import Cookies from "js-cookie";
 import { message } from "antd";
 import type { AuthType } from "../../@types/AuthType";
+import { useUpdateAdress } from "../../hooks/useQuery/useQueryAction/useQueryAction";
 
 interface AddressProps {
   user: AuthType | null;
@@ -9,37 +10,69 @@ interface AddressProps {
 }
 
 const Address: React.FC<AddressProps> = ({ user, setUser }) => {
+  const mutation = useUpdateAdress();
+
+  const { mutate, isPending, isLoading } = mutation as any;
+
+  const isSaving = isPending || isLoading;
+
   const handleSaveAddress = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    if (!user) return;
+
     const formData = new FormData(e.currentTarget);
 
     const newAddress = {
       country: formData.get("country") as string,
       town: formData.get("town") as string,
       street_address: formData.get("street") as string,
-      extra_address: formData.get("extra_address") as string,
+      extra_address: (formData.get("extra_address") as string) || "",
       state: formData.get("state") as string,
       zip: formData.get("zip") as string,
     };
 
-    const updatedUser = {
-      ...user,
-      billing_address: {
-        ...user?.billing_address,
-        ...newAddress,
-      },
-    } as AuthType;
+    mutate(
+      {
+        _id: user._id,
+        name: user.name,
+        surname: user.surname,
+        email: user.email,
+        phone_number: user.phone_number,
 
-    Cookies.set("user", JSON.stringify(updatedUser));
-    setUser(updatedUser);
-    message.success("Address saved successfully!");
+        country: newAddress.country,
+        town: newAddress.town,
+        street_address: newAddress.street_address,
+        extra_address: newAddress.extra_address,
+        state: newAddress.state,
+        zip: newAddress.zip,
+      },
+      {
+        onSuccess: () => {
+          const updatedUser: AuthType = {
+            ...user,
+            billing_address: newAddress,
+          };
+
+          Cookies.set("user", JSON.stringify(updatedUser));
+          setUser(updatedUser);
+          message.success("Address saved successfully!");
+        },
+        onError: (error: any) => {
+          console.error(error);
+          message.error("Server error!");
+        },
+      },
+    );
   };
 
   return (
     <div>
-      <h2 className="text-[18px] font-bold text-[#3D3D3D] mb-8">
-        Billing Address
-      </h2>
+      <div className="flex justify-between items-center mb-8">
+        <h2 className="text-[18px] font-bold text-[#3D3D3D]">
+          Billing Address
+        </h2>
+        {isSaving && <span className="text-sm text-[#46A358]">Saving...</span>}
+      </div>
 
       <form onSubmit={handleSaveAddress}>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6 mb-6">
@@ -51,7 +84,7 @@ const Address: React.FC<AddressProps> = ({ user, setUser }) => {
               required
               name="country"
               type="text"
-              defaultValue={user?.billing_address?.country}
+              defaultValue={user?.billing_address?.country || ""}
               placeholder="Select your country / region..."
               className="border border-[#EAEAEA] rounded p-2 focus:outline-[#46A358] text-[#3D3D3D]"
             />
@@ -65,7 +98,7 @@ const Address: React.FC<AddressProps> = ({ user, setUser }) => {
               required
               name="town"
               type="text"
-              defaultValue={user?.billing_address?.town}
+              defaultValue={user?.billing_address?.town || ""}
               placeholder="Type your town / city..."
               className="border border-[#EAEAEA] rounded p-2 focus:outline-[#46A358] text-[#3D3D3D]"
             />
@@ -79,7 +112,7 @@ const Address: React.FC<AddressProps> = ({ user, setUser }) => {
               required
               name="street"
               type="text"
-              defaultValue={user?.billing_address?.street_address}
+              defaultValue={user?.billing_address?.street_address || ""}
               placeholder="Type your street address..."
               className="border border-[#EAEAEA] rounded p-2 focus:outline-[#46A358] text-[#3D3D3D]"
             />
@@ -90,7 +123,7 @@ const Address: React.FC<AddressProps> = ({ user, setUser }) => {
             <input
               name="extra_address"
               type="text"
-              defaultValue={user?.billing_address?.extra_address}
+              defaultValue={user?.billing_address?.extra_address || ""}
               placeholder="Type your extra address..."
               className="border border-[#EAEAEA] rounded p-2 focus:outline-[#46A358] text-[#3D3D3D]"
             />
@@ -104,7 +137,7 @@ const Address: React.FC<AddressProps> = ({ user, setUser }) => {
               required
               name="state"
               type="text"
-              defaultValue={user?.billing_address?.state}
+              defaultValue={user?.billing_address?.state || ""}
               placeholder="Type your state..."
               className="border border-[#EAEAEA] rounded p-2 focus:outline-[#46A358] text-[#3D3D3D]"
             />
@@ -118,7 +151,7 @@ const Address: React.FC<AddressProps> = ({ user, setUser }) => {
               required
               name="zip"
               type="text"
-              defaultValue={user?.billing_address?.zip}
+              defaultValue={user?.billing_address?.zip || ""}
               placeholder="Type your zip..."
               className="border border-[#EAEAEA] rounded p-2 focus:outline-[#46A358] text-[#3D3D3D]"
             />
@@ -127,9 +160,12 @@ const Address: React.FC<AddressProps> = ({ user, setUser }) => {
 
         <button
           type="submit"
-          className="bg-[#46A358] text-white font-bold py-3 px-8 rounded mt-4 hover:bg-[#357c44] transition-all cursor-pointer w-full md:w-auto"
+          disabled={isSaving}
+          className={`bg-[#46A358] text-white font-bold py-3 px-8 rounded mt-4 hover:bg-[#357c44] transition-all cursor-pointer w-full md:w-auto ${
+            isSaving ? "opacity-70 cursor-not-allowed" : ""
+          }`}
         >
-          Save changes
+          {isSaving ? "Saving..." : "Save changes"}
         </button>
       </form>
     </div>

@@ -11,6 +11,8 @@ import CheckoutPage from "../pages/CheckoutPage";
 
 import ErrorPage from "../components/NotFound/NotFound";
 import ProtectedRoute from "../routes/ProtectedRoute";
+import UserProfile from "../pages/UserProfile";
+
 
 export const router = createBrowserRouter([
   {
@@ -42,6 +44,7 @@ export const router = createBrowserRouter([
       { path: "/shop", element: <Shop /> },
       { path: "/shop/:category/:id", element: <ProductPage /> },
       { path: "/blog/:id", element: <BlogDetail /> },
+      { path: "/user/:id", element: <UserProfile /> },
 
       {
         path: "/checkout",

@@ -7,6 +7,7 @@ import { setAuthorizationModalVisibility } from "../../../redux/modal-store";
 import { getUser } from "../../../redux/user-slice";
 import { signInWithGoogle } from "../../../config/config";
 import { getCoupon, clearCart } from "../../../redux/shop-slice";
+import type { WishlistObj } from "../../../@types/AuthType";
 
 export const useLoginMutation = () => {
   const notify = notificationApi();
@@ -168,6 +169,72 @@ export const useDeleteOrderMutation = () => {
     onSuccess: () => {
       notify("order-delete");
       queryClient.invalidateQueries({ queryKey: ["get-orders"] });
+    },
+    onError: () => notify("error"),
+  });
+};
+
+export const useIncreaseView = () => {
+  const axios = useAxios();
+
+  return useMutation({
+    mutationKey: ["increment-view"],
+    mutationFn: ({ postId }: { postId: string }) =>
+      axios({
+        url: "user/blog/view",
+        method: "PUT",
+        body: { _id: postId },
+      }),
+    onSuccess: (data) => {
+      console.log(data);
+    },
+    onError: (error) => {
+      console.log(error);
+    },
+  });
+};
+
+export const useUpdateUser = () => {
+  const axios = useAxios();
+
+  return useMutation({
+    mutationKey: ["update-user"],
+    mutationFn: (data: any) =>
+      axios({
+        url: "user/account-details",
+        method: "POST",
+        body: data,
+      }),
+  });
+};
+export const useUpdateAdress = () => {
+  const axios = useAxios();
+
+  return useMutation({
+    mutationKey: ["update-user-adress"],
+    mutationFn: (data: any) =>
+      axios({
+        url: "user/address",
+        method: "POST",
+        body: data,
+      }),
+  });
+};
+
+export const useCreateBlogMutation = () => {
+  const axios = useAxios();
+  const notify = notificationApi();
+
+  return useMutation({
+    mutationKey: ["create-blog"],
+    mutationFn: (data: { title: string; content: string; short_description: string }) =>
+      axios({
+        url: "user/blog",
+        method: "POST",
+        body: data,
+      }),
+    onSuccess: () => {
+      notify("post"); 
     },
     onError: () => notify("error"),
   });

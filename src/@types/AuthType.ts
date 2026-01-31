@@ -1,5 +1,5 @@
 export interface AuthType {
-  billing_address: {
+  billing_address?: {
     country: string;
     town: string;
     street_address: string;

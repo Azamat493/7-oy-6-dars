@@ -27,27 +27,45 @@ const BlogSectionInfo = () => {
   const [filteredBlogs, setFilteredBlogs] = useState<BlogType[]>([]);
   const [isSearching, setIsSearching] = useState(false);
 
- const { data: apiData = [], isLoading: apiLoading } = useQueryHandler({
-  url: "user/blog",
-  pathname: "blog",
-  param: { search: searchTerm }, 
-});
+  const { data: apiData = [], isLoading: apiLoading } = useQueryHandler({
+    url: "user/blog",
+    pathname: "blog",
+    param: { search: searchTerm },
+  });
 
   useEffect(() => {
-    if (apiData.length > 0) {
+    if (apiData && apiData.length > 0) {
       setAllBlogs(apiData);
-      localStorage.setItem("blogs_cache", JSON.stringify(apiData));
       setFilteredBlogs(apiData);
+
+      try {
+        localStorage.setItem("blogs_cache", JSON.stringify(apiData));
+      } catch (err) {
+        console.error("Cache save error:", err);
+      }
     } else {
       const stored = localStorage.getItem("blogs_cache");
       if (stored) {
-        const parsed: BlogType[] = JSON.parse(stored);
-        setAllBlogs(parsed);
-        setFilteredBlogs(parsed);
+        try {
+          const parsed = JSON.parse(stored);
+
+          if (Array.isArray(parsed)) {
+            setAllBlogs(parsed);
+            setFilteredBlogs(parsed);
+          } else {
+            localStorage.removeItem("blogs_cache");
+          }
+        } catch (error) {
+          console.error("JSON parse error:", error);
+
+          localStorage.removeItem("blogs_cache");
+
+          setAllBlogs([]);
+          setFilteredBlogs([]);
+        }
       }
     }
   }, [apiData]);
-
   const handleSearch = () => {
     setIsSearching(true);
     setFilteredBlogs([]);

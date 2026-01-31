@@ -1,6 +1,5 @@
 import { toast } from "react-hot-toast";
 
-
 type NotificationType =
   | "login"
   | "409"
@@ -9,8 +8,9 @@ type NotificationType =
   | "error"
   | "coupon"
   | "not_coupon"
-  | "order"         
-  | "order-delete"; 
+  | "order"
+  | "order-delete"
+  | "post";
 
 export const notificationApi = () => {
   const notify = (type: NotificationType) => {
@@ -29,12 +29,16 @@ export const notificationApi = () => {
         return toast.success("Chegirma qabul qilindi!");
       case "not_coupon":
         return toast.error("Chegirma aniqlanmadi!");
-      
-    
       case "order":
         return toast.success("Buyurtma muvaffaqiyatli qabul qilindi!");
       case "order-delete":
         return toast.success("Buyurtma muvaffaqiyatli o'chirildi!");
+      case "post":
+        return toast.success("Ma'lumot muvaffaqiyatli qo'shildi");
+      case "post":
+        return toast.error("Ma'lumot qo'shilmadi");
+      default:
+        return toast("Xabar");
     }
   };
   return notify;

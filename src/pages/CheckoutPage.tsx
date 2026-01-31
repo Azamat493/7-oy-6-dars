@@ -334,7 +334,7 @@ const CheckoutPage = () => {
           <textarea
             placeholder="Comment..."
             className="
-    w-full
+    w-full md:block hidden
     mb-4
     p-3
     border
